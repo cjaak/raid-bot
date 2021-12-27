@@ -1,0 +1,36 @@
+{
+  "built-in_raids": [
+    {
+      "key": "asa",
+      "name": "Terror from Beyond",
+      "mode": ["sm", "hm", "nim"]
+    },
+    {
+      "key": "snv",
+      "name": "Scum and Villainy",
+      "mode": ["sm", "hm", "nim"]
+    },
+    {
+      "key": "tos",
+      "name": "Temple of Sacrifice",
+      "mode": ["sm", "hm"]
+    }
+  ],
+  "set-ups": {
+    "sm": {
+      "tank": 1,
+      "dd": 6,
+      "heal": 1
+    },
+    "hm": {
+      "tank": 2,
+      "dd": 4,
+      "heal": 2
+    },
+    "nim": {
+      "tank": 2,
+      "dd": 4,
+      "heal": 2
+    }
+  }
+}
