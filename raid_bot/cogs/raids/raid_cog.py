@@ -12,6 +12,7 @@ import json
 import datetime
 import sys
 
+from raid_bot.cogs.raids.raid_view import RaidView
 from raid_bot.models.raid_model import Raid
 from raid_bot.models.raid_list_model import LIST_OF_RAIDS
 
@@ -25,9 +26,8 @@ logger.setLevel(logging.INFO)
 class RaidCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        with open("data/raid_options.json") as f:
-            self.raid_options = json.load(f)
-        self.raids = {}
+
+
     @slash_command(
         guild_ids=[902671732987551774]
     )  # Create a slash command for the supplied guilds.
@@ -48,24 +48,14 @@ class RaidCog(commands.Cog):
         description: Option(str, "Description")
     ):
         """Schedules a raid"""
-        tank_button = Button(label="Tank", style=discord.ButtonStyle.blurple)
-        dd_button = Button(label="DD", style=discord.ButtonStyle.red)
-        heal_button = Button(label="Heal", style=discord.ButtonStyle.green)
-
-        async def button_callback(interaction):
-            edited_message = await interaction.response.edit_message()
-            edited_raid = LIST_OF_RAIDS[edited_message.id]
-            edited_raid.setup["Tanks"].append(interaction.username)
-            embed_raid = self.build_raid_message(edited_raid)
-            
-        tank_button.callback = button_callback
 
         raid = Raid(name, mode, description, time)
 
         raid_embed = self.build_raid_message(raid)
-        view = self.build_raid_view(tank_button, dd_button, heal_button)
-        message = await ctx.respond(embed=raid_embed, view=view)
+        message = await ctx.respond(embed=raid_embed, view=RaidView())
         LIST_OF_RAIDS[message.id] = raid
+
+        print(LIST_OF_RAIDS)
 
     def build_raid_message(self, raid):
         embed_title = f"{raid.name} {raid.mode}\n<t:{raid.time}:F>"
@@ -78,13 +68,6 @@ class RaidCog(commands.Cog):
             embed.add_field(name=field_string, value='\u200b')
         return embed
 
-    def build_raid_view(self, tank_button, dd_button, heal_button):
-        view = View()
-        view.add_item(tank_button)
-        view.add_item(dd_button)
-        view.add_item(heal_button)
-
-        return view
 
 
 def setup(bot):

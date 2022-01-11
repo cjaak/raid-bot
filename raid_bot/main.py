@@ -6,7 +6,7 @@ sys.path.append("./")
 
 def main():
     bot = Bot()
-    for ext in ["cogs.raid"]:
+    for ext in ["cogs.raids.raid_cog"]:
         bot.load_extension(ext)
     bot.run(bot.token)
     bot.logger.info("Shutting down.")

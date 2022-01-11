@@ -11,7 +11,6 @@ import logging
 import os
 import re
 
-from database import create_connection, create_table, increment, select, upsert
 class Bot(commands.Bot):
     def __init__(self):
         self.launch_time = datetime.utcnow()
