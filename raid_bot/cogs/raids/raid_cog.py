@@ -52,8 +52,6 @@ class RaidCog(commands.Cog):
         """Schedules a raid"""
         post = await ctx.send('\u200B')
 
-        self.bot.logger.info(ctx)
-
         raid_id = post.id
         raid = Raid(name, mode, description, timestamp)
 

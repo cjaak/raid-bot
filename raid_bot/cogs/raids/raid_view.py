@@ -16,18 +16,36 @@ class RaidView(View):
 
     async def handle_click_role(self, button: Button, interaction: discord.Interaction):
         user_id = interaction.user.id
-        print(user_id)
         message_id = interaction.message.id
         current_raid: Raid = LIST_OF_RAIDS[message_id]
-        current_raid.setup[button.custom_id].append(user_id)
 
-        logger.info(current_raid)
+        clicked_role = button.custom_id
+        other_roles = self.get_other_roles(clicked_role)
+
+        role_counter = len(ROLES)
+        for role in ROLES:
+            if user_id in current_raid.setup[role]:
+                current_raid.setup[role].remove(user_id)
+                if role != clicked_role:
+                    current_raid.setup[clicked_role].append(user_id)
+            else:
+                role_counter -= 1
+
+        if role_counter == 0:
+            current_raid.setup[clicked_role].append(user_id)
+
+        logger.info(current_raid.setup)
 
         embed = raid_message_builder.build_raid_message(current_raid)
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-
+    def get_other_roles(self, clicked_role):
+        other_roles = []
+        for role in ROLES:
+            if role != clicked_role:
+                other_roles += role
+        return other_roles
 
     @discord.ui.button(label="Tank", style=discord.ButtonStyle.blurple, custom_id="Tanks")
     async def tank_button(self, button, interaction):
@@ -47,5 +65,5 @@ class RaidView(View):
     async def edit_button(self, button, interaction):
         await interaction.response.send_message(f"You clicked {button.label}. You are {interaction.user.mention}")
 
-
+ROLES = ["Tanks", "DDs", "Heals"]
 

@@ -11,7 +11,7 @@ def build_raid_message(raid):
         field_string = f"{role} {current}/{limit}"
         players = []
         for player_id in raid.setup[role]:
-            players.append(f"@<{player_id}>")
+            players.append(f"<@{player_id}>")
         embed.add_field(name=field_string, value="\n".join(players) if len(players) > 0 else '\u200B')
 
     return embed
