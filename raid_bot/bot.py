@@ -3,7 +3,7 @@ from typing import List
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from discord_slash import SlashCommand
+#from discord_slash import SlashCommand
 import gettext
 import json
 import locale
@@ -31,6 +31,11 @@ class Bot(commands.Bot):
         except KeyError:
             logging.critical("Please supply a discord bot token.")
             raise SystemExit
+
+        with open('data/config.json', 'r') as f:
+            config = json.load(f)
+
+        self.server_tz = config['SERVER_TZ']
 
         intents = discord.Intents.none()
         intents.guilds = True

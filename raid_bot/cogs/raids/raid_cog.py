@@ -1,6 +1,7 @@
+from discord import Interaction
 from discord.ext import commands
-from typing import Dict
 import discord
+import asyncio
 
 from discord.ui import Button, View
 from discord.commands import (
@@ -13,6 +14,7 @@ import datetime
 import sys
 
 from raid_bot.cogs.raids.raid_view import RaidView
+from raid_bot.cogs.raids.raid_message_builder import build_raid_message
 from raid_bot.models.raid_model import Raid
 from raid_bot.models.raid_list_model import LIST_OF_RAIDS
 
@@ -44,32 +46,33 @@ class RaidCog(commands.Cog):
             ],
         ),
         mode: Option(str, "Choose the mode", choices=["sm", "hm", "nim"]),
-        time: Option(str, "Set the time"),
-        description: Option(str, "Description")
+        timestamp: Option(str, "Set the time"),
+        description: Option(str, "Description", required=False)
     ):
         """Schedules a raid"""
+        post = await ctx.send('\u200B')
 
-        raid = Raid(name, mode, description, time)
+        self.bot.logger.info(ctx)
 
-        raid_embed = self.build_raid_message(raid)
-        message = await ctx.respond(embed=raid_embed, view=RaidView())
-        LIST_OF_RAIDS[message.id] = raid
+        raid_id = post.id
+        raid = Raid(name, mode, description, timestamp)
 
-        print(LIST_OF_RAIDS)
+        raid_embed = build_raid_message(raid)
+        await post.edit(embed=raid_embed, view=RaidView())
 
-    def build_raid_message(self, raid):
-        embed_title = f"{raid.name} {raid.mode}\n<t:{raid.time}:F>"
-        embed = discord.Embed(title=embed_title, description=raid.description, colour=0x4B34EF)
+        LIST_OF_RAIDS[raid_id] = raid
 
-        for role in raid.roster:
-            current = len(raid.setup[role])
-            limit = raid.roster[role]
-            field_string = f"{role} {current}/{limit}"
-            embed.add_field(name=field_string, value='\u200b')
-        return embed
+        # workaround because respond is required at least once.
+        await ctx.respond('\u200B')
+
+
+    def dump(self, obj):
+        for attr in dir(obj):
+            self.bot.logger.info("obj.%s = %r" % (attr, getattr(obj, attr)))
 
 
 
 def setup(bot):
     bot.add_cog(RaidCog(bot))
     logger.info("Loaded Raid Cog.")
+
