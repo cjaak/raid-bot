@@ -24,7 +24,14 @@ sys.path.append("../")
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
+RAIDS = [
+    "Terror from Beyond",
+    "Scum and Villainy",
+    "Temple of Sacrifice",
+    "The Ravagers",
+    "Dread Fortress",
+    "Dread Palace"
+]
 
 class RaidCog(commands.Cog):
     def __init__(self, bot):
@@ -40,18 +47,14 @@ class RaidCog(commands.Cog):
         name: Option(
             str,
             "Choose the Raid",
-            choices=[
-                "Terror from Beyond",
-                "Scum and Villainy",
-                "Temple of Sacrifice",
-            ],
+            choices=RAIDS,
         ),
         mode: Option(str, "Choose the mode", choices=["sm", "hm", "nim"]),
         time: Option(str, "Set the time"),
         description: Option(str, "Description", required=False)
     ):
         """Schedules a raid"""
-        timestamp = Time().converter(self.bot, ctx.guild_id, ctx.user.id, time)
+        timestamp = Time().converter(self.bot,  time)
 
         post = await ctx.send('\u200B')
 
@@ -63,9 +66,9 @@ class RaidCog(commands.Cog):
 
         LIST_OF_RAIDS[raid_id] = raid
 
-        # workaround because `respond` is required at least once.
+        # workaround because `respond` seems to be required.
         dummy = await ctx.respond('\u200B')
-        await dummy.delete()
+        await dummy.delete_original_message(delay=None)
 
 
     def dump(self, obj):

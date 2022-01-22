@@ -1,14 +1,8 @@
 [
-    {
-        "name": "asa",
-        "value": "Terror from Beyond"
-    },
-    {
-        "name": "snv",
-        "value": "Scum and Villainy"
-    },
-    {
-        "name": "tos",
-        "value": "Temple of Sacrifice"
-    }
+    "Terror from Beyond",
+    "Scum and Villainy",
+    "Temple of Sacrifice",
+    "The Ravagers",
+    "Dread Fortress",
+    "Dread Palace"
 ]
