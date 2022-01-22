@@ -20,7 +20,6 @@ class RaidView(View):
         current_raid: Raid = LIST_OF_RAIDS[message_id]
 
         clicked_role = button.custom_id
-        other_roles = self.get_other_roles(clicked_role)
 
         role_counter = len(ROLES)
         for role in ROLES:
@@ -40,12 +39,6 @@ class RaidView(View):
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-    def get_other_roles(self, clicked_role):
-        other_roles = []
-        for role in ROLES:
-            if role != clicked_role:
-                other_roles += role
-        return other_roles
 
     @discord.ui.button(label="Tank", style=discord.ButtonStyle.blurple, custom_id="Tanks")
     async def tank_button(self, button, interaction):

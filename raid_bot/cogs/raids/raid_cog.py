@@ -17,6 +17,7 @@ from raid_bot.cogs.raids.raid_view import RaidView
 from raid_bot.cogs.raids.raid_message_builder import build_raid_message
 from raid_bot.models.raid_model import Raid
 from raid_bot.models.raid_list_model import LIST_OF_RAIDS
+from raid_bot.cogs.time.time import Time
 
 sys.path.append("../")
 
@@ -46,10 +47,12 @@ class RaidCog(commands.Cog):
             ],
         ),
         mode: Option(str, "Choose the mode", choices=["sm", "hm", "nim"]),
-        timestamp: Option(str, "Set the time"),
+        time: Option(str, "Set the time"),
         description: Option(str, "Description", required=False)
     ):
         """Schedules a raid"""
+        timestamp = Time().converter(self.bot, ctx.guild_id, ctx.user.id, time)
+
         post = await ctx.send('\u200B')
 
         raid_id = post.id
@@ -60,8 +63,9 @@ class RaidCog(commands.Cog):
 
         LIST_OF_RAIDS[raid_id] = raid
 
-        # workaround because respond is required at least once.
-        await ctx.respond('\u200B')
+        # workaround because `respond` is required at least once.
+        dummy = await ctx.respond('\u200B')
+        await dummy.delete()
 
 
     def dump(self, obj):

@@ -1,4 +1,4 @@
-class Raid():
+class Raid:
     def __init__(self, name, mode, description, time):
         self.name = name
         self.mode = mode

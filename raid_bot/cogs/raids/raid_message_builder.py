@@ -1,8 +1,18 @@
 import discord
 
+from raid_bot.models.raid_model import Raid
 
-def build_raid_message(raid):
-    embed_title = f"{raid.name} {raid.mode}\n<t:{raid.time}:R>"
+
+def build_raid_message(raid: Raid):
+    """Build the embed part of a discord message.
+
+    Args:
+        raid: The raid object containing the data to build the discord message
+
+    Returns:
+        The embed containing the data of the input
+    """
+    embed_title: str = f"{raid.name} {raid.mode}\n<t:{raid.time}:R>"
     embed = discord.Embed(title=embed_title, description=raid.description, colour=0x4B34EF)
 
     for role in raid.roster:
