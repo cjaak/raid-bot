@@ -1,13 +1,14 @@
 from sqlite3 import Connection
 from typing import Dict, List
 
+import datetime
 import discord
 import logging
 from raid_bot.database import select_one_raid, select_all_assignments_by_raid_id
 from raid_bot.models.assignment_model import Assignment
 
 from raid_bot.models.raid_model import Raid
-from raid_bot.models.sign_up_options import SignUpOptions
+from raid_bot.models.sign_up_options import SignUpOptions, EMOJI
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -30,16 +31,18 @@ def build_raid_message(conn: Connection, raid_id: int):
     embed = discord.Embed(
         title=embed_title, description=raid.description, colour=0x4B34EF
     )
-    sign_ups = build_player_sign_ups(conn, raid_id)
+    sign_ups, total = build_player_sign_ups(conn, raid_id)
     for role in sign_ups:
         current = len(sign_ups[role])
         # TODO: specify roster in database for limits
         # limit = raid.roster[role]
-        field_string = f"{role} {current}/X"
+        field_string = f"{role} ({current})"
         embed.add_field(
             name=field_string,
             value="\n".join(sign_ups[role]) if len(sign_ups[role]) > 0 else "\u200B",
         )
+        embed.timestamp = datetime.datetime.utcnow()
+        embed.set_footer(text=f"total sign ups: {total} ")
 
     return embed
 
@@ -52,9 +55,10 @@ def build_player_sign_ups(conn, raid_id):
     ]
     logger.info(list_of_assignments)
     for index, assignment in enumerate(list_of_assignments):
-        sign_ups[assignment.role].append(f"`{index+1}` <@{assignment.player_id}>")
+        sign_ups[assignment.role].append(f"`{index+1}` {EMOJI[assignment.role]} <@{assignment.player_id}>")
     logger.info(sign_ups)
-    return sign_ups
+    total = len(list_of_assignments)
+    return sign_ups, total
 
 
 def _build_empty_sign_up_dict() -> Dict:
