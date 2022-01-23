@@ -12,9 +12,8 @@ def build_raid_message(raid: Raid):
     Returns:
         The embed containing the data of the input
     """
-    embed_title: str = f"{raid.name} {raid.mode}\n<t:{raid.time}:R>"
+    embed_title: str = f"{raid.name} {raid.mode}<t:{raid.time}:R>"
     embed = discord.Embed(title=embed_title, description=raid.description, colour=0x4B34EF)
-
     for role in raid.roster:
         current = len(raid.setup[role])
         limit = raid.roster[role]

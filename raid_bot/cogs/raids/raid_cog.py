@@ -49,7 +49,7 @@ class RaidCog(commands.Cog):
             "Choose the Raid",
             choices=RAIDS,
         ),
-        mode: Option(str, "Choose the mode", choices=["sm", "hm", "nim"]),
+        mode: Option(str, "Choose the mode", choices=["SM", "HM", "NIM"]),
         time: Option(str, "Set the time"),
         description: Option(str, "Description", required=False)
     ):
