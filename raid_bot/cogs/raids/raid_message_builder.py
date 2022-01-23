@@ -30,19 +30,16 @@ def build_raid_message(conn: Connection, raid_id: int):
     embed = discord.Embed(
         title=embed_title, description=raid.description, colour=0x4B34EF
     )
-    build_player_sign_ups(conn, raid_id)
-    # sign_ups = build_sign_ups(conn, raid_id)
-    # for role in sign_ups:
-    #     current = len(sign_ups[role])
-    #     # limit = raid.roster[role]
-    #     field_string = f"{role} {current}/X"
-    #     players = []
-    #     for player_id in raid.setup[role]:
-    #         players.append(f"<@{player_id}>")
-    #     embed.add_field(
-    #         name=field_string,
-    #         value="\n".join(players) if len(players) > 0 else "\u200B",
-    #     )
+    sign_ups = build_player_sign_ups(conn, raid_id)
+    for role in sign_ups:
+        current = len(sign_ups[role])
+        # TODO: specify roster in database for limits
+        # limit = raid.roster[role]
+        field_string = f"{role} {current}/X"
+        embed.add_field(
+            name=field_string,
+            value="\n".join(sign_ups[role]) if len(sign_ups[role]) > 0 else "\u200B",
+        )
 
     return embed
 
@@ -55,7 +52,7 @@ def build_player_sign_ups(conn, raid_id):
     ]
     logger.info(list_of_assignments)
     for index, assignment in enumerate(list_of_assignments):
-        sign_ups[assignment.role].append(f"`{index}` <@{assignment.player_id}>")
+        sign_ups[assignment.role].append(f"`{index+1}` <@{assignment.player_id}>")
     logger.info(sign_ups)
     return sign_ups
 

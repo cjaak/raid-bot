@@ -7,6 +7,7 @@ from raid_bot.models.raid_model import Raid
 from raid_bot.database import select_one_raid, insert_or_update_assignment
 from raid_bot.models.raid_list_model import LIST_OF_RAIDS
 from raid_bot.cogs.raids import raid_message_builder
+from raid_bot.models.sign_up_options import SignUpOptions
 
 
 logger = logging.getLogger(__name__)
@@ -46,17 +47,17 @@ class RaidView(View):
         await interaction.response.edit_message(embed=embed, view=self)
 
     @discord.ui.button(
-        label="Tank", style=discord.ButtonStyle.blurple, custom_id="tank"
+        label="Tank", style=discord.ButtonStyle.blurple, custom_id=SignUpOptions.TANK
     )
     async def tank_button(self, button, interaction):
         await self.handle_click_role(button, interaction)
 
-    @discord.ui.button(label="DD", style=discord.ButtonStyle.red, custom_id="dd")
+    @discord.ui.button(label="DD", style=discord.ButtonStyle.red, custom_id=SignUpOptions.DD)
     async def dd_button(self, button, interaction):
         # await interaction.response.send_message(f"You clicked {button.label}. You are {interaction.user.mention}")
         await self.handle_click_role(button, interaction)
 
-    @discord.ui.button(label="Heal", style=discord.ButtonStyle.green, custom_id="heal")
+    @discord.ui.button(label="Heal", style=discord.ButtonStyle.green, custom_id=SignUpOptions.HEAL)
     async def heal_button(self, button, interaction):
         # await interaction.response.send_message(f"You clicked {button.label}. You are {interaction.user.mention}")
         await self.handle_click_role(button, interaction)
@@ -68,7 +69,7 @@ class RaidView(View):
         )
 
     @discord.ui.button(
-        label="Unavailable", style=discord.ButtonStyle.gray, custom_id="unavailable"
+        label="Unavailable", style=discord.ButtonStyle.gray, custom_id=SignUpOptions.UNAVAILABLE
     )
     async def unavailable_button(self, button, interaction):
         await interaction.response.send_message(
@@ -76,7 +77,7 @@ class RaidView(View):
         )
 
     @discord.ui.button(
-        label="Tentative", style=discord.ButtonStyle.gray, custom_id="tentative"
+        label="Tentative", style=discord.ButtonStyle.gray, custom_id=SignUpOptions.TENTATIVE
     )
     async def tentative_button(self, button, interaction):
         await interaction.response.send_message(
