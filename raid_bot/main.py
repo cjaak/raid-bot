@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 sys.path.append("./")
 
+
 def main():
     bot = Bot()
     for ext in ["cogs.raids.raid_cog"]:

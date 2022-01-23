@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-#TODO: comprehensive timezone setting and managing for users and servers
+# TODO: comprehensive timezone setting and managing for users and servers
 class TimeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

@@ -34,12 +34,12 @@ class Bot(commands.Bot):
             logging.critical("Please supply a discord bot token.")
             raise SystemExit
 
-        with open('data/config.json', 'r') as f:
+        with open("data/config.json", "r") as f:
             config = json.load(f)
 
-        self.server_tz = config['SERVER_TZ']
+        self.server_tz = config["SERVER_TZ"]
 
-        conn = create_connection('raid_db')
+        conn = create_connection("raid_db")
         if conn:
             self.logger.info("Bot connected to raid database.")
         self.conn = conn

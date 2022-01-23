@@ -6,7 +6,7 @@ import asyncio
 from discord.ui import Button, View
 from discord.commands import (
     slash_command,
-    Option
+    Option,
 )  # Importing the decorator that makes slash commands.
 import logging
 import json
@@ -31,17 +31,17 @@ RAIDS = [
     "Temple of Sacrifice",
     "The Ravagers",
     "Dread Fortress",
-    "Dread Palace"
+    "Dread Palace",
 ]
+
 
 class RaidCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.conn = self.bot.conn
 
-        create_table(self.conn, 'raid')
-        create_table(self.conn, 'assign')
-
+        create_table(self.conn, "raid")
+        create_table(self.conn, "assign")
 
     @slash_command(
         guild_ids=[902671732987551774]
@@ -56,36 +56,35 @@ class RaidCog(commands.Cog):
         ),
         mode: Option(str, "Choose the mode", choices=["SM", "HM", "NIM"]),
         time: Option(str, "Set the time"),
-        description: Option(str, "Description", required=False)
+        description: Option(str, "Description", required=False),
     ):
         """Schedules a raid"""
-        timestamp = Time().converter(self.bot,  time)
+        timestamp = Time().converter(self.bot, time)
 
-        post = await ctx.send('\u200B')
+        post = await ctx.send("\u200B")
 
-        raid_id = post.id
-        raid = Raid(name, mode, description, timestamp)
+        raid_id = int(post.id)
 
-        insert_raid(self.conn, raid_id, ctx.channel.id, ctx.guild_id, ctx.author.id, name, mode, timestamp)
+        insert_raid(
+            self.conn,
+            raid_id,
+            ctx.channel.id,
+            ctx.guild_id,
+            ctx.author.id,
+            name,
+            mode,
+            description,
+            timestamp,
+        )
 
-
-        raid_embed = build_raid_message(raid)
-        await post.edit(embed=raid_embed, view=RaidView())
-
-        LIST_OF_RAIDS[raid_id] = raid
+        raid_embed = build_raid_message(self.conn, raid_id)
+        await post.edit(embed=raid_embed, view=RaidView(self.conn))
 
         # workaround because `respond` seems to be required.
-        dummy = await ctx.respond('\u200B')
+        dummy = await ctx.respond("\u200B")
         await dummy.delete_original_message(delay=None)
-
-
-    def dump(self, obj):
-        for attr in dir(obj):
-            self.bot.logger.info("obj.%s = %r" % (attr, getattr(obj, attr)))
-
 
 
 def setup(bot):
     bot.add_cog(RaidCog(bot))
     logger.info("Loaded Raid Cog.")
-
