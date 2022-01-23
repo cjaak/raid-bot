@@ -18,6 +18,7 @@ from raid_bot.cogs.raids.raid_message_builder import build_raid_message
 from raid_bot.models.raid_model import Raid
 from raid_bot.models.raid_list_model import LIST_OF_RAIDS
 from raid_bot.cogs.time.time import Time
+from raid_bot.database import insert_raid, create_table
 
 sys.path.append("../")
 
@@ -36,6 +37,10 @@ RAIDS = [
 class RaidCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.conn = self.bot.conn
+
+        create_table(self.conn, 'raid')
+        create_table(self.conn, 'assign')
 
 
     @slash_command(
@@ -60,6 +65,9 @@ class RaidCog(commands.Cog):
 
         raid_id = post.id
         raid = Raid(name, mode, description, timestamp)
+
+        insert_raid(self.conn, raid_id, ctx.channel.id, ctx.guild_id, ctx.author.id, name, mode, timestamp)
+
 
         raid_embed = build_raid_message(raid)
         await post.edit(embed=raid_embed, view=RaidView())

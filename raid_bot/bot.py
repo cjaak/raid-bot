@@ -3,13 +3,15 @@ from typing import List
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-#from discord_slash import SlashCommand
 import gettext
 import json
 import locale
 import logging
 import os
 import re
+
+from database import create_connection
+
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -36,6 +38,11 @@ class Bot(commands.Bot):
             config = json.load(f)
 
         self.server_tz = config['SERVER_TZ']
+
+        conn = create_connection('raid_db')
+        if conn:
+            self.logger.info("Bot connected to raid database.")
+        self.conn = conn
 
         intents = discord.Intents.none()
         intents.guilds = True

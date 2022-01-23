@@ -72,10 +72,19 @@ def select_one_raid(conn, raid_id):
         logger.exception(e)
 
 
+def select_all_raids_by_guild_id(conn, guild_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM raids WHERE guild_id = ?", guild_id)
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
 def update_raid(conn, raid_id, column, value):
     try:
         cursor = conn.cursor()
-        cursor.execute(f"UPDATE raids SET {column} = ?", value)
+        cursor.execute(f"UPDATE raids SET {column} = ? WHERE raid_id = {raid_id}", value)
     except sqlite3.Error as e:
         logger.exception(e)
 
@@ -87,5 +96,14 @@ def insert_or_update_assignment(conn, player_id, raid_id, role, timestamp):
         if cursor.rowcount == 0:
             cursor.execute("INSERT INTO assignment VALUES ?", raid_id, player_id, role, timestamp)
         return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_all_assignments_by_raid_id(conn, raid_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM assignment WHERE raid_id = ?", raid_id)
+        return cursor.fetchall()
     except sqlite3.Error as e:
         logger.exception(e)
