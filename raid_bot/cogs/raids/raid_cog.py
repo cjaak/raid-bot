@@ -77,7 +77,7 @@ class RaidCog(commands.Cog):
             timestamp,
         )
 
-        raid_embed = build_raid_message(self.conn, raid_id)
+        raid_embed: discord.Embed = build_raid_message(self.conn, raid_id)
         await post.edit(embed=raid_embed, view=RaidView(self.conn))
 
         # workaround because `respond` seems to be required.
@@ -85,6 +85,6 @@ class RaidCog(commands.Cog):
         await dummy.delete_original_message(delay=None)
 
 
-def setup(bot):
+def setup(bot: Bot):
     bot.add_cog(RaidCog(bot))
     logger.info("Loaded Raid Cog.")

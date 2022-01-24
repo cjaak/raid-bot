@@ -24,13 +24,14 @@ class RaidCog(commands.Cog):
         embed = self.build_calendar_embed(ctx.guild_id)
         ctx.respond(embed=embed)
 
+    def build_calendar_embed(self, guild_id: int):
 
-    def build_calendar_embed(self, guild_id):
-
-        raids: List[Raid] = [Raid(list_item) for list_item in select_all_raids_by_guild_id(guild_id)]
-        title = _("Scheduled runs:")
-        desc = _("Click the link to sign up!")
-        embed = discord.Embed(
+        raids: List[Raid] = [
+            Raid(list_item) for list_item in select_all_raids_by_guild_id(guild_id)
+        ]
+        title: str = _("Scheduled runs:")
+        desc: str = _("Click the link to sign up!")
+        embed: discord.Embed = discord.Embed(
             title=title, description=desc, colour=discord.Colour(0x3498DB)
         )
         for raid in raids[:20]:

@@ -35,7 +35,6 @@ def build_raid_message(conn: Connection, raid_id: int):
     for role in sign_ups:
         current = len(sign_ups[role])
         # TODO: specify roster in database for limits
-        # limit = raid.roster[role]
         field_string = f"{role} ({current})"
         embed.add_field(
             name=field_string,
@@ -47,16 +46,18 @@ def build_raid_message(conn: Connection, raid_id: int):
     return embed
 
 
-def build_player_sign_ups(conn: Connection, raid_id: int) -> Tuple[Dict[str, List[str]], int]:
+def build_player_sign_ups(
+    conn: Connection, raid_id: int
+) -> Tuple[Dict[str, List[str]], int]:
     """Build formatted strings out of signed up players for the raid.
 
-        Args:
-            conn: connection to the database
-            raid_id: The id of the raid to build an embed for
+    Args:
+        conn: connection to the database
+        raid_id: The id of the raid to build an embed for
 
-        Returns:
-            A dict that contains a list of player strings for each role
-        """
+    Returns:
+        A dict that contains a list of player strings for each role
+    """
 
     sign_ups = _build_empty_sign_up_dict()
     list_of_assignments: List[Assignment] = [
@@ -65,7 +66,9 @@ def build_player_sign_ups(conn: Connection, raid_id: int) -> Tuple[Dict[str, Lis
     ]
     logger.info(list_of_assignments)
     for index, assignment in enumerate(list_of_assignments):
-        sign_ups[assignment.role].append(f"`{index+1}` {EMOJI[assignment.role]} <@{assignment.player_id}>")
+        sign_ups[assignment.role].append(
+            f"`{index+1}` {EMOJI[assignment.role]} <@{assignment.player_id}>"
+        )
     logger.info(sign_ups)
     total = len(list_of_assignments)
     return sign_ups, total
@@ -73,20 +76,20 @@ def build_player_sign_ups(conn: Connection, raid_id: int) -> Tuple[Dict[str, Lis
 
 def _build_empty_sign_up_dict() -> Dict[str, List]:
     """Build an empty dict with each role option as a key.
-        Ex.:
-        {
-            role1: []
-            role2: []
-            role3: []
-        }
+    Ex.:
+    {
+        role1: []
+        role2: []
+        role3: []
+    }
 
-        Args:
-            conn: connection to the database
-            raid_id: The id of the raid to build an embed for
+    Args:
+        conn: connection to the database
+        raid_id: The id of the raid to build an embed for
 
-        Returns:
-            the dict containing each role as a key and an empty list as value
-        """
+    Returns:
+        the dict containing each role as a key and an empty list as value
+    """
     sign_ups: Dict[str, List[str]] = {}
     for role in SignUpOptions:
         sign_ups[role] = []

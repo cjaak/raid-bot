@@ -9,7 +9,8 @@ class SignUpOptions(str, Enum):
     TENTATIVE = "Tentative"
     UNAVAILABLE = "Unavailable"
 
-EMOJI: Dict[str, str]={
+
+EMOJI: Dict[str, str] = {
     SignUpOptions.TANK: "\U0001F6E1",
     SignUpOptions.DD: "\U0001F4A5",
     SignUpOptions.HEAL: "\U0000267B",

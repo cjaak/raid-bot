@@ -10,7 +10,14 @@ CONN: Connection
 
 
 def create_connection(db_file):
-    """create a database connection to a SQLite database"""
+    """create a database connection to a SQLite database.
+
+    Args:
+        db_file: database file
+
+    Returns:
+        connection to database
+    """
     try:
         conn: Connection = sqlite3.connect(db_file)
     except sqlite3.Error as e:
@@ -19,7 +26,7 @@ def create_connection(db_file):
     return conn
 
 
-def create_table(conn, table_name):
+def create_table(conn: Connection, table_name: str):
     """create a database table"""
     query = get_table_creation_query(table_name)
     try:
@@ -30,7 +37,7 @@ def create_table(conn, table_name):
         logger.exception(e)
 
 
-def get_table_creation_query(table):
+def get_table_creation_query(table_name: str):
     sql_dict = {
         "raid": (
             "create table if not exists Raids ("
@@ -54,11 +61,19 @@ def get_table_creation_query(table):
             ");"
         ),
     }
-    return sql_dict[table]
+    return sql_dict[table_name]
 
 
 def insert_raid(
-    conn, raid_id, channel_id, guild_id, author_id, name, mode, description, timestamp
+    conn: Connection,
+    raid_id: int,
+    channel_id: int,
+    guild_id: int,
+    author_id: int,
+    name: str,
+    mode: str,
+    description: str,
+    timestamp: int,
 ):
     try:
         cursor = conn.cursor()
@@ -79,7 +94,7 @@ def insert_raid(
         logger.exception(e)
 
 
-def select_one_raid(conn, raid_id: int):
+def select_one_raid(conn: Connection, raid_id: int):
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM raids WHERE raid_id = (?)", [raid_id])
@@ -91,7 +106,7 @@ def select_one_raid(conn, raid_id: int):
         logger.exception(e)
 
 
-def select_all_raids_by_guild_id(conn, guild_id):
+def select_all_raids_by_guild_id(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM raids WHERE guild_id = ?", guild_id)
@@ -100,7 +115,7 @@ def select_all_raids_by_guild_id(conn, guild_id):
         logger.exception(e)
 
 
-def update_raid(conn, raid_id, column, value):
+def update_raid(conn: Connection, raid_id: int, column: str, value: Union[str, int]):
     try:
         cursor = conn.cursor()
         cursor.execute(
@@ -110,16 +125,12 @@ def update_raid(conn, raid_id, column, value):
         logger.exception(e)
 
 
-def insert_or_update_assignment(conn, player_id, raid_id, role, timestamp):
+def insert_or_update_assignment(
+    conn: Connection, player_id: int, raid_id: int, role: str, timestamp: int
+):
     try:
         cursor = conn.cursor()
-        # cursor.execute(
-        #     f"UPDATE assignment SET timestamp = {timestamp}, SET role = (?) WHERE raid_id = {raid_id} AND player_id = {player_id}",
-        #     role,
-        # )
-        # if cursor.rowcount == 0:
         cursor.execute(
-            # NOTE: workaround until I figure out how to do this properly
             "INSERT OR REPLACE INTO assignment VALUES (?, ?, ?, ?)",
             (raid_id, player_id, role, timestamp),
         )
@@ -128,7 +139,7 @@ def insert_or_update_assignment(conn, player_id, raid_id, role, timestamp):
         logger.exception(e)
 
 
-def select_all_assignments_by_raid_id(conn, raid_id):
+def select_all_assignments_by_raid_id(conn: Connection, raid_id: int):
     try:
         cursor = conn.cursor()
         cursor.execute(
@@ -139,7 +150,7 @@ def select_all_assignments_by_raid_id(conn, raid_id):
         logger.exception(e)
 
 
-def select_assignments_by_role_for_raid(conn, raid_id, role):
+def select_assignments_by_role_for_raid(conn: Connection, raid_id: int, role: str):
     try:
         cursor = conn.cursor()
         cursor.execute(

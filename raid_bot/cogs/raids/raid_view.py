@@ -17,29 +17,29 @@ VIEW_NAME = "RaidView"
 
 
 class RaidView(View):
-    def __init__(self, conn):
+    def __init__(self, conn: Connection):
         super().__init__(timeout=None)
         self.conn = conn
         for option in SignUpOptions:
             self.add_item(SignUpButton(option))
 
     async def handle_click_role(self, role: str, interaction: discord.Interaction):
-        user_id = interaction.user.id
-        raid_id = interaction.message.id
+        user_id: int = interaction.user.id
+        raid_id: int = interaction.message.id
         timestamp = int(time.time())
-        insert_or_update_assignment(
-            self.conn, user_id, raid_id, role, timestamp
-        )
+        insert_or_update_assignment(self.conn, user_id, raid_id, role, timestamp)
 
-        embed = raid_message_builder.build_raid_message(self.conn, raid_id)
+        embed: discord.Embed = raid_message_builder.build_raid_message(
+            self.conn, raid_id
+        )
 
         await interaction.response.edit_message(embed=embed, view=self)
 
 
 class SignUpButton(Button):
-    def __init__(self, option):
+    def __init__(self, option: str):
         super().__init__(emoji=EMOJI[option], custom_id=option)
 
     async def callback(self, interaction: discord.Interaction):
-        role = self.custom_id
+        role: str = self.custom_id
         await self.view.handle_click_role(role, interaction)
