@@ -5,8 +5,8 @@ from typing import List
 import discord
 from discord.ext import commands
 from discord.commands import slash_command, Option
-from raid_bot.models.raid_list_model import LIST_OF_RAIDS
 from raid_bot.models.raid_list_model import Raid
+from raid_bot.database import select_all_raids_by_guild_id
 
 sys.path.append("../")
 
@@ -21,12 +21,13 @@ class RaidCog(commands.Cog):
 
     @slash_command(guild_ids=[902671732987551774])
     async def calendar(self, ctx):
-        embed = self.build_calendar_embed()
+        embed = self.build_calendar_embed(ctx.guild_id)
         ctx.respond(embed=embed)
 
-    def build_calendar_embed(self):
 
-        raids: List[Raid] = LIST_OF_RAIDS
+    def build_calendar_embed(self, guild_id):
+
+        raids: List[Raid] = [Raid(list_item) for list_item in select_all_raids_by_guild_id(guild_id)]
         title = _("Scheduled runs:")
         desc = _("Click the link to sign up!")
         embed = discord.Embed(
@@ -35,9 +36,9 @@ class RaidCog(commands.Cog):
         for raid in raids[:20]:
             timestamp = int(raid.time)
             msg = "[{name} {mode}](<https://discord.com/channels/{guild}/{channel}/{msg}>)\n".format(
-                guild=902671732987551774,
-                channel=raid[0],
-                msg=raid[1],
+                guild=guild_id,
+                channel=raid.channel_id,
+                msg=raid.raid_id,
                 name=raid.name,
                 mode=raid.mode,
             )
