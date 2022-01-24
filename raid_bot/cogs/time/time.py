@@ -6,6 +6,8 @@ import discord
 from discord.ext.commands import Context
 from discord.ext.commands.converter import T_co
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Time(commands.Converter):
     async def convert(self, ctx: Context, argument: str) -> T_co:

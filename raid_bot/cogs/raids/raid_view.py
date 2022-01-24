@@ -35,44 +35,6 @@ class RaidView(View):
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-    # @discord.ui.button(
-    #     label="Tank", style=discord.ButtonStyle.blurple, custom_id=SignUpOptions.TANK
-    # )
-    # async def tank_button(self, button, interaction):
-    #     await self.handle_click_role(button, interaction)
-    #
-    # @discord.ui.button(label="DD", style=discord.ButtonStyle.red, custom_id=SignUpOptions.DD)
-    # async def dd_button(self, button, interaction):
-    #     # await interaction.response.send_message(f"You clicked {button.label}. You are {interaction.user.mention}")
-    #     await self.handle_click_role(button, interaction)
-    #
-    # @discord.ui.button(label="Heal", style=discord.ButtonStyle.green, custom_id=SignUpOptions.HEAL)
-    # async def heal_button(self, button, interaction):
-    #     # await interaction.response.send_message(f"You clicked {button.label}. You are {interaction.user.mention}")
-    #     await self.handle_click_role(button, interaction)
-    #
-    # @discord.ui.button(label="Edit", style=discord.ButtonStyle.gray, custom_id="edit")
-    # async def edit_button(self, button, interaction):
-    #     await interaction.response.send_message(
-    #         f"You clicked {button.label}. You are {interaction.user.mention}"
-    #     )
-    #
-    # @discord.ui.button(
-    #     label="Unavailable", style=discord.ButtonStyle.gray, custom_id=SignUpOptions.UNAVAILABLE
-    # )
-    # async def unavailable_button(self, button, interaction):
-    #     await interaction.response.send_message(
-    #         f"You clicked {button.label}. You are {interaction.user.mention}"
-    #     )
-    #
-    # @discord.ui.button(
-    #     label="Tentative", style=discord.ButtonStyle.gray, custom_id=SignUpOptions.TENTATIVE
-    # )
-    # async def tentative_button(self, button, interaction):
-    #     await interaction.response.send_message(
-    #         f"You clicked {button.label}. You are {interaction.user.mention}"
-    #     )
-
 
 class SignUpButton(Button):
     def __init__(self, option):

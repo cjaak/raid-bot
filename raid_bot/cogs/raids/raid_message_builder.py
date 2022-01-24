@@ -47,7 +47,17 @@ def build_raid_message(conn: Connection, raid_id: int):
     return embed
 
 
-def build_player_sign_ups(conn, raid_id):
+def build_player_sign_ups(conn: Connection, raid_id: int) -> Tuple[Dict[str, List[str]], int]:
+    """Build formatted strings out of signed up players for the raid.
+
+        Args:
+            conn: connection to the database
+            raid_id: The id of the raid to build an embed for
+
+        Returns:
+            A dict that contains a list of player strings for each role
+        """
+
     sign_ups = _build_empty_sign_up_dict()
     list_of_assignments: List[Assignment] = [
         Assignment(list_item)
@@ -61,7 +71,22 @@ def build_player_sign_ups(conn, raid_id):
     return sign_ups, total
 
 
-def _build_empty_sign_up_dict() -> Dict:
+def _build_empty_sign_up_dict() -> Dict[str, List]:
+    """Build an empty dict with each role option as a key.
+        Ex.:
+        {
+            role1: []
+            role2: []
+            role3: []
+        }
+
+        Args:
+            conn: connection to the database
+            raid_id: The id of the raid to build an embed for
+
+        Returns:
+            the dict containing each role as a key and an empty list as value
+        """
     sign_ups: Dict[str, List[str]] = {}
     for role in SignUpOptions:
         sign_ups[role] = []
