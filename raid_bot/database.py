@@ -45,9 +45,13 @@ def get_table_creation_query(table_name: str):
             "channel_id integer not null, "
             "guild_id integer not null, "
             "author_id integer not null, "
-            "name text not null, mode text, "
+            "name text not null, "
+            "mode text, "
             "description text null,"
-            "time integer not null);"
+            "time integer not null,"
+            "setup text"
+            "foreign key (setup) references Setup(setup_id)"
+            ");"
         ),
         "assign": (
             "create table if not exists Assignment ("
@@ -60,6 +64,23 @@ def get_table_creation_query(table_name: str):
             "foreign key (player_id) references Players(player_id)"
             ");"
         ),
+        "setup": (
+            "create table if not exists Setup ("
+            "setup_id text not null"
+            "guild_id integer not null, "
+            "name text not null, "
+            "primary key (setup_id)"
+            ");"
+        ),
+        "setup_players": (
+            "create table if not exists SetupPlayers ("
+            "player_id integer not null"
+            "setup_id integer not null"
+            "role text not null"
+            "primary key (player_id, setup_id)"
+            "foreign key (setup_id) references Setup(setup_id)"
+            ");"
+        )
     }
     return sql_dict[table_name]
 
@@ -138,6 +159,29 @@ def insert_or_update_assignment(
     except sqlite3.Error as e:
         logger.exception(e)
 
+
+def insert_or_replace_setup(conn: Connection, guild_id: int, name: str):
+    setup_id: str = str(guild_id) + name
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?)",
+            setup_id, guild_id, name
+        )
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_all_players_for_setup(conn: Connection, setup_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM setupplayers where setup_id = ?; ",
+            setup_id
+        )
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
 
 def select_all_assignments_by_raid_id(conn: Connection, raid_id: int):
     try:
