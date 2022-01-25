@@ -14,6 +14,7 @@ class Raid:
     mode: str
     description: Union[str, None]
     timestamp: int
+    setup: Union[str, None]
 
     def __init__(self, raid: List):
         self.raid_id = raid[0]
@@ -24,18 +25,4 @@ class Raid:
         self.mode = raid[5]
         self.description = raid[6]
         self.timestamp = raid[7]
-
-
-# class Raid:
-#     def __init__(self, name, mode, description, time):
-#         self.name = name
-#         self.mode = mode
-#         self.description = description
-#         self.time = time
-#         self.roster = {"Tanks": 2, "DDs": 4, "Heals": 2}
-#         self.setup = {}
-#         self.tentative = []
-#         self.absent = []
-#
-#         for role in self.roster:
-#             self.setup[role] = []
+        self.setup = raid[8]

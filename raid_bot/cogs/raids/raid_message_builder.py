@@ -1,5 +1,5 @@
 from sqlite3 import Connection
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import datetime
 import discord

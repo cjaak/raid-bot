@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class RaidCog(commands.Cog):
+class CalendarCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.conn = bot.conn
 
     @slash_command(guild_ids=[902671732987551774])
     async def calendar(self, ctx):
@@ -27,7 +28,7 @@ class RaidCog(commands.Cog):
     def build_calendar_embed(self, guild_id: int):
 
         raids: List[Raid] = [
-            Raid(list_item) for list_item in select_all_raids_by_guild_id(guild_id)
+            Raid(list_item) for list_item in select_all_raids_by_guild_id(self.conn, guild_id)
         ]
         title: str = _("Scheduled runs:")
         desc: str = _("Click the link to sign up!")
@@ -45,5 +46,9 @@ class RaidCog(commands.Cog):
             )
             embed.add_field(name=f"<t:{timestamp}:F>", value=msg, inline=False)
         embed.set_footer(text=_("Last updated"))
-        embed.timestamp = datetime.now()
+        embed.timestamp = datetime.datetime.utcnow()
         return embed
+
+def setup(bot):
+    bot.add_cog(CalendarCog(bot))
+    logger.info("Loaded Calendar Cog.")

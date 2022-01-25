@@ -1,6 +1,7 @@
 import time
 import discord.ui
 from discord.ui import Button, View
+from sqlite3 import Connection
 import logging
 
 from raid_bot.models.raid_model import Raid

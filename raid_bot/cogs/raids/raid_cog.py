@@ -57,6 +57,7 @@ class RaidCog(commands.Cog):
         mode: Option(str, "Choose the mode", choices=["SM", "HM", "NIM"]),
         time: Option(str, "Set the time"),
         description: Option(str, "Description", required=False),
+        setup: Option(str, "Choose a saved setup", required=False, choices=[])
     ):
         """Schedules a raid"""
         timestamp = Time().converter(self.bot, time)
@@ -75,6 +76,7 @@ class RaidCog(commands.Cog):
             mode,
             description,
             timestamp,
+            setup
         )
 
         raid_embed: discord.Embed = build_raid_message(self.conn, raid_id)
@@ -85,6 +87,6 @@ class RaidCog(commands.Cog):
         await dummy.delete_original_message(delay=None)
 
 
-def setup(bot: Bot):
+def setup(bot):
     bot.add_cog(RaidCog(bot))
     logger.info("Loaded Raid Cog.")

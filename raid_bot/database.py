@@ -2,6 +2,7 @@ import json
 import logging
 import sqlite3
 from sqlite3 import Connection
+from typing import Union
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -49,7 +50,7 @@ def get_table_creation_query(table_name: str):
             "mode text, "
             "description text null,"
             "time integer not null,"
-            "setup text"
+            "setup text,"
             "foreign key (setup) references Setup(setup_id)"
             ");"
         ),
@@ -66,7 +67,7 @@ def get_table_creation_query(table_name: str):
         ),
         "setup": (
             "create table if not exists Setup ("
-            "setup_id text not null"
+            "setup_id text not null,"
             "guild_id integer not null, "
             "name text not null, "
             "primary key (setup_id)"
@@ -74,9 +75,9 @@ def get_table_creation_query(table_name: str):
         ),
         "setup_players": (
             "create table if not exists SetupPlayers ("
-            "player_id integer not null"
-            "setup_id integer not null"
-            "role text not null"
+            "player_id integer not null,"
+            "setup_id integer not null,"
+            "role text not null,"
             "primary key (player_id, setup_id)"
             "foreign key (setup_id) references Setup(setup_id)"
             ");"
@@ -95,11 +96,12 @@ def insert_raid(
     mode: str,
     description: str,
     timestamp: int,
+    setup: str
 ):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO raids VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO raids VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 raid_id,
                 channel_id,
@@ -109,6 +111,7 @@ def insert_raid(
                 mode,
                 description,
                 timestamp,
+                setup
             ),
         )
     except sqlite3.Error as e:
