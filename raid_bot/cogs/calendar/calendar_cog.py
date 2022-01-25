@@ -30,13 +30,13 @@ class CalendarCog(commands.Cog):
         raids: List[Raid] = [
             Raid(list_item) for list_item in select_all_raids_by_guild_id(self.conn, guild_id)
         ]
-        title: str = _("Scheduled runs:")
-        desc: str = _("Click the link to sign up!")
+        title: str = "Scheduled runs:"
+        desc: str = "Click the link to sign up!"
         embed: discord.Embed = discord.Embed(
             title=title, description=desc, colour=discord.Colour(0x3498DB)
         )
         for raid in raids[:20]:
-            timestamp = int(raid.time)
+            timestamp = int(raid.timestamp)
             msg = "[{name} {mode}](<https://discord.com/channels/{guild}/{channel}/{msg}>)\n".format(
                 guild=guild_id,
                 channel=raid.channel_id,
@@ -45,7 +45,7 @@ class CalendarCog(commands.Cog):
                 mode=raid.mode,
             )
             embed.add_field(name=f"<t:{timestamp}:F>", value=msg, inline=False)
-        embed.set_footer(text=_("Last updated"))
+        embed.set_footer(text="Last updated")
         embed.timestamp = datetime.datetime.utcnow()
         return embed
 
