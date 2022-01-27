@@ -23,7 +23,7 @@ class CalendarCog(commands.Cog):
     @slash_command(guild_ids=[902671732987551774])
     async def calendar(self, ctx):
         embed = self.build_calendar_embed(ctx.guild_id)
-        ctx.respond(embed=embed)
+        await ctx.respond(embed=embed)
 
     def build_calendar_embed(self, guild_id: int):
 

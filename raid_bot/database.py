@@ -130,6 +130,15 @@ def select_one_raid(conn: Connection, raid_id: int):
         logger.exception(e)
 
 
+def get_all_raid_ids(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT raid_id FROM raids")
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
 def select_all_raids_by_guild_id(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()

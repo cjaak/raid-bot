@@ -60,7 +60,7 @@ class SetupCog(commands.Cog):
             SignUpOptions.Heal: []
         }
 
-        list_of_players: List[SetupPlayer] = [SetupPlayer(item) for item in select_all_players_for_setup(setup_id)]
+        list_of_players: List[SetupPlayer] = [SetupPlayer(item) for item in select_all_players_for_setup(self.conn, setup_id)]
 
         for index, player in enumerate(list_of_players):
             sign_ups[player.role].append(
@@ -70,6 +70,7 @@ class SetupCog(commands.Cog):
         total = len(list_of_players)
 
         return sign_ups, total
+
 
 def setup(bot):
     bot.add_cog(SetupCog(bot))
