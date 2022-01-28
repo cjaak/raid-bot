@@ -69,7 +69,6 @@ def build_player_sign_ups(
         sign_ups[assignment.role].append(
             f"`{index+1}` {EMOJI[assignment.role]} <@{assignment.player_id}>"
         )
-    logger.info(sign_ups)
     total = len(list_of_assignments)
     return sign_ups, total
 

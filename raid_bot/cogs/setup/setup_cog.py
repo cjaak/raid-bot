@@ -16,10 +16,15 @@ sys.path.append("../")
 
 from raid_bot.models.sign_up_options import SignUpOptions, EMOJI
 from raid_bot.models.setup_player_model import SetupPlayer
-from raid_bot.database import insert_or_replace_setup, select_all_players_for_setup, create_table
+from raid_bot.database import (
+    insert_or_replace_setup,
+    select_all_players_for_setup,
+    create_table,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 
 class SetupCog(commands.Cog):
     def __init__(self, bot):
@@ -29,9 +34,7 @@ class SetupCog(commands.Cog):
         create_table(self.conn, "setup")
         create_table(self.conn, "setup_players")
 
-    @slash_command(
-        guild_ids=[902671732987551774]
-    )
+    @slash_command(guild_ids=[902671732987551774])
     async def setup(self, ctx, name: Option(str, "Name this setup.")):
         insert_or_replace_setup(ctx.guild_id, name)
         setup_id = ctx.guild_id + name
@@ -46,7 +49,9 @@ class SetupCog(commands.Cog):
             field_string = f"{role} ({current})"
             embed.add_field(
                 name=field_string,
-                value="\n".join(sign_ups[role]) if len(sign_ups[role]) > 0 else "\u200B",
+                value="\n".join(sign_ups[role])
+                if len(sign_ups[role]) > 0
+                else "\u200B",
             )
             embed.timestamp = datetime.datetime.utcnow()
             embed.set_footer(text=f"total sign ups: {total} ")
@@ -57,10 +62,13 @@ class SetupCog(commands.Cog):
         sign_ups = {
             SignUpOptions.Tank: [],
             SignUpOptions.DD: [],
-            SignUpOptions.Heal: []
+            SignUpOptions.Heal: [],
         }
 
-        list_of_players: List[SetupPlayer] = [SetupPlayer(item) for item in select_all_players_for_setup(self.conn, setup_id)]
+        list_of_players: List[SetupPlayer] = [
+            SetupPlayer(item)
+            for item in select_all_players_for_setup(self.conn, setup_id)
+        ]
 
         for index, player in enumerate(list_of_players):
             sign_ups[player.role].append(

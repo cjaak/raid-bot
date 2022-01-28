@@ -81,7 +81,13 @@ def get_table_creation_query(table_name: str):
             "primary key (player_id, setup_id)"
             "foreign key (setup_id) references Setup(setup_id)"
             ");"
-        )
+        ),
+        "settings": (
+            "create table if not exists Settings ("
+            "guild_id integer not null,"
+            "calendar text,"
+            "primary key (guild_id)"
+        ),
     }
     return sql_dict[table_name]
 
@@ -96,7 +102,7 @@ def insert_raid(
     mode: str,
     description: str,
     timestamp: int,
-    setup: str
+    setup: str,
 ):
     try:
         cursor = conn.cursor()
@@ -111,7 +117,7 @@ def insert_raid(
                 mode,
                 description,
                 timestamp,
-                setup
+                setup,
             ),
         )
     except sqlite3.Error as e:
@@ -139,6 +145,15 @@ def get_all_raid_ids(conn):
         logger.exception(e)
 
 
+def get_all_raids(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM raids")
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
 def select_all_raids_by_guild_id(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()
@@ -152,8 +167,24 @@ def update_raid(conn: Connection, raid_id: int, column: str, value: Union[str, i
     try:
         cursor = conn.cursor()
         cursor.execute(
-            f"UPDATE raids SET {column} = ? WHERE raid_id = {raid_id}", value
+            f"UPDATE raids SET {column} = ? WHERE raid_id = {raid_id}", [value]
         )
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def delete_raid(conn: Connection, raid_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM raid WHERE raid_id = ?", [raid_id])
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def delete_assignment(conn: Connection, raid_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM assignment WHERE raid_id = ?", [raid_id])
     except sqlite3.Error as e:
         logger.exception(e)
 
@@ -177,8 +208,7 @@ def insert_or_replace_setup(conn: Connection, guild_id: int, name: str):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?)",
-            setup_id, guild_id, name
+            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?)", setup_id, guild_id, name
         )
     except sqlite3.Error as e:
         logger.exception(e)
@@ -187,13 +217,11 @@ def insert_or_replace_setup(conn: Connection, guild_id: int, name: str):
 def select_all_players_for_setup(conn: Connection, setup_id):
     try:
         cursor = conn.cursor()
-        cursor.execute(
-            "SELECT * FROM setupplayers where setup_id = ?; ",
-            setup_id
-        )
+        cursor.execute("SELECT * FROM setupplayers where setup_id = ?; ", setup_id)
         return cursor.fetchall()
     except sqlite3.Error as e:
         logger.exception(e)
+
 
 def select_all_assignments_by_raid_id(conn: Connection, raid_id: int):
     try:
@@ -214,5 +242,28 @@ def select_assignments_by_role_for_raid(conn: Connection, raid_id: int, role: st
             (raid_id, role),
         )
         return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+def select_calendar(conn: Connection, guild_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT ids FROM settings WHERE guild_id = ? ",
+            [guild_id]
+        )
+        return cursor.fetchone()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def insert_or_replace_calendar(conn: Connection, guild_id: int, ids: str):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT OR REPLACE INTO settings VALUES (?, ?)",
+            (guild_id, ids),
+        )
+        return True
     except sqlite3.Error as e:
         logger.exception(e)

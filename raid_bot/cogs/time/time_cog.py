@@ -12,6 +12,7 @@ class TimeCog(commands.Cog):
     def get_server_timezone(self):
         return self.bot.server_tz
 
+
 def setup(bot):
     bot.add_cog(TimeCog(bot))
     logger.info("Loaded Time Cog.")

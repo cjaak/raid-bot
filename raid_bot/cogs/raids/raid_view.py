@@ -29,12 +29,16 @@ class RaidView(View):
         raid_id: int = interaction.message.id
         timestamp = int(time.time())
         insert_or_update_assignment(self.conn, user_id, raid_id, role, timestamp)
+        self.conn.commit()
 
         embed: discord.Embed = raid_message_builder.build_raid_message(
             self.conn, raid_id
         )
 
         await interaction.response.edit_message(embed=embed, view=self)
+
+    async def edit_raid(self, button, interaction):
+        pass
 
 
 class SignUpButton(Button):
