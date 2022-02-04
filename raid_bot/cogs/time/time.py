@@ -18,8 +18,6 @@ class Time(commands.Converter):
     def converter(bot, argument):
         time_cog = bot.get_cog("TimeCog")
         argument_lower = argument.lower()
-        logger.info(argument)
-        logger.info(argument_lower)
         parse_settings = {"PREFER_DATES_FROM": "future"}
         server = "server"
         if server in argument_lower:

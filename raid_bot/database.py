@@ -87,6 +87,7 @@ def get_table_creation_query(table_name: str):
             "guild_id integer not null,"
             "calendar text,"
             "primary key (guild_id)"
+            ");"
         ),
     }
     return sql_dict[table_name]
@@ -176,7 +177,7 @@ def update_raid(conn: Connection, raid_id: int, column: str, value: Union[str, i
 def delete_raid(conn: Connection, raid_id: int):
     try:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM raid WHERE raid_id = ?", [raid_id])
+        cursor.execute("DELETE FROM raids WHERE raid_id = ?", [raid_id])
     except sqlite3.Error as e:
         logger.exception(e)
 
@@ -249,7 +250,7 @@ def select_calendar(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT ids FROM settings WHERE guild_id = ? ",
+            "SELECT calendar FROM settings WHERE guild_id = ? ",
             [guild_id]
         )
         return cursor.fetchone()

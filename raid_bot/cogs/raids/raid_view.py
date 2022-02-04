@@ -6,7 +6,6 @@ import logging
 
 from raid_bot.models.raid_model import Raid
 from raid_bot.database import select_one_raid, insert_or_update_assignment
-from raid_bot.models.raid_list_model import LIST_OF_RAIDS
 from raid_bot.cogs.raids import raid_message_builder
 from raid_bot.models.sign_up_options import SignUpOptions, EMOJI
 
@@ -37,8 +36,6 @@ class RaidView(View):
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-    async def edit_raid(self, button, interaction):
-        pass
 
 
 class SignUpButton(Button):
