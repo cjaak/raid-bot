@@ -54,7 +54,7 @@ class RaidCog(commands.Cog):
         create_table(self.conn, "assign")
         create_table(self.conn, "settings")
 
-        self.calendar_cog = bot.get_cog('CalendarCog')
+        self.calendar_cog = bot.get_cog("CalendarCog")
 
         raids = get_all_raid_ids(self.conn)
         self.raids = [raid[0] for raid in raids]
