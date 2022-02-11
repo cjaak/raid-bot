@@ -36,7 +36,7 @@ class CalendarCog(commands.Cog):
         return
 
     async def update_calendar(self, guild_id, new_run=True):
-        calendar_id = select_calendar(self.conn, guild_id)
+        calendar_id = select_calendar(self.conn, guild_id)[0]
         if not calendar_id:
             return
         ids = calendar_id.split("/")

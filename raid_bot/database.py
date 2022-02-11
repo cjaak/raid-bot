@@ -209,7 +209,7 @@ def insert_or_replace_setup(conn: Connection, guild_id: int, name: str):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?)", setup_id, guild_id, name
+            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?)", (setup_id, guild_id, name)
         )
     except sqlite3.Error as e:
         logger.exception(e)
@@ -218,7 +218,7 @@ def insert_or_replace_setup(conn: Connection, guild_id: int, name: str):
 def select_all_players_for_setup(conn: Connection, setup_id):
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM setupplayers where setup_id = ?; ", setup_id)
+        cursor.execute("SELECT * FROM setupplayers where setup_id = ?; ", [setup_id])
         return cursor.fetchall()
     except sqlite3.Error as e:
         logger.exception(e)

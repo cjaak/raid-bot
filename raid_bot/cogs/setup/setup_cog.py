@@ -36,10 +36,10 @@ class SetupCog(commands.Cog):
 
     @slash_command(guild_ids=[902671732987551774])
     async def setup(self, ctx, name: Option(str, "Name this setup.")):
-        insert_or_replace_setup(ctx.guild_id, name)
-        setup_id = ctx.guild_id + name
+        insert_or_replace_setup(self.conn, ctx.guild_id, name)
+        setup_id = str(ctx.guild_id) + str(name)
         embed: discord.Embed = self.build_setup_embed(setup_id, name)
-        ctx.respond(embed=embed)
+        await ctx.respond(embed=embed)
 
     def build_setup_embed(self, setup_id, name):
         sign_ups, total = self.build_players_for_setup(setup_id)
@@ -60,9 +60,9 @@ class SetupCog(commands.Cog):
 
     def build_players_for_setup(self, setup_id):
         sign_ups = {
-            SignUpOptions.Tank: [],
+            SignUpOptions.TANK: [],
             SignUpOptions.DD: [],
-            SignUpOptions.Heal: [],
+            SignUpOptions.HEAL: [],
         }
 
         list_of_players: List[SetupPlayer] = [

@@ -113,11 +113,6 @@ class RaidCog(commands.Cog):
     async def on_raw_message_delete(self, payload):
         raid_id = payload.message_id
         if raid_id in self.raids:
-            # Delete the guild event
-            try:
-                self.calendar_cog.delete_guild_event(raid_id)
-            except requests.HTTPError as e:
-                logger.warning(e.response.text)
             # Handle clean up on bot side
             await self.cleanup_old_raid(raid_id, "Raid manually deleted.")
             self.conn.commit()
