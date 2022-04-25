@@ -1,4 +1,3 @@
-import requests as requests
 from discord import Interaction
 from discord.ext import commands, tasks
 import discord
@@ -60,10 +59,10 @@ class RaidCog(commands.Cog):
         self.raids = [raid[0] for raid in raids]
         logger.info(f"We have loaded {len(self.raids)} raids in memory.")
 
-        self.background_task.start()
+        self.calendar_cog = bot.get_cog('CalendarCog')
 
     @slash_command(
-        guild_ids=[902671732987551774]
+        guild_ids=[902671732987551774, 826561483731107891]
     )  # Create a slash command for the supplied guilds.
     async def raid(
         self,
@@ -104,6 +103,8 @@ class RaidCog(commands.Cog):
 
         raid_embed: discord.Embed = build_raid_message(self.conn, raid_id)
         await post.edit(embed=raid_embed, view=RaidView(self.conn))
+
+        await self.calendar_cog.update_calendar(ctx.guild_id)
 
         # workaround because `respond` seems to be required.
         dummy = await ctx.respond("\u200B")

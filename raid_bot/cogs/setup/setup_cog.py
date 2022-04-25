@@ -34,7 +34,7 @@ class SetupCog(commands.Cog):
         create_table(self.conn, "setup")
         create_table(self.conn, "setup_players")
 
-    @slash_command(guild_ids=[902671732987551774])
+    @slash_command(guild_ids=[902671732987551774, 826561483731107891])
     async def setup(self, ctx, name: Option(str, "Name this setup.")):
         insert_or_replace_setup(self.conn, ctx.guild_id, name)
         setup_id = str(ctx.guild_id) + str(name)

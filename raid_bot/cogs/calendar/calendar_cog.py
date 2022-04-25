@@ -20,7 +20,7 @@ class CalendarCog(commands.Cog):
         self.bot = bot
         self.conn = bot.conn
 
-    @slash_command(guild_ids=[902671732987551774])
+    @slash_command(guild_ids=[902671732987551774, 826561483731107891])
     async def calendar(self, ctx):
         embed = self.build_calendar_embed(ctx.guild_id)
         msg = await ctx.send(embed=embed)
@@ -42,7 +42,7 @@ class CalendarCog(commands.Cog):
         ids = calendar_id.split("/")
         channel_id = ids[0]
         msg_id = ids[1]
-        chn = self.bot.get_channel(channel_id)
+        chn = self.bot.get_channel(int(channel_id))
         try:
             msg = chn.get_partial_message(msg_id)
         except AttributeError:
@@ -54,7 +54,7 @@ class CalendarCog(commands.Cog):
 
         embed = self.build_calendar_embed(guild_id)
         try:
-            msg.edit(embed=embed)
+            await msg.edit(embed=embed)
         except discord.Forbidden:
             pass
 
