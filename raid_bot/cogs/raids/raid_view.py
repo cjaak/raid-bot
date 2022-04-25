@@ -37,7 +37,6 @@ class RaidView(View):
         await interaction.response.edit_message(embed=embed, view=self)
 
 
-
 class SignUpButton(Button):
     def __init__(self, option: str):
         super().__init__(emoji=EMOJI[option], custom_id=option)

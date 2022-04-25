@@ -6,9 +6,7 @@ from raid_bot.database import update_raid
 
 class RaidSelect(Select):
     def __init__(self, conn):
-        options = [
-            discord.SelectOption(label="foo", value="bar")
-        ]
+        options = [discord.SelectOption(label="foo", value="bar")]
         self.conn = conn
         super().__init__(placeholder="Raid", options=options)
 

@@ -32,8 +32,9 @@ from raid_bot.database import (
     delete_raid,
     delete_assignment,
     select_all_setup_names_for_guild,
-    select_one_setup_by_name, select_all_players_for_setup,
-    insert_or_update_assignment
+    select_one_setup_by_name,
+    select_all_players_for_setup,
+    insert_or_update_assignment,
 )
 from raid_bot.models.setup_model import Setup
 from raid_bot.models.setup_player_model import SetupPlayer
@@ -62,13 +63,13 @@ class RaidCog(commands.Cog):
         create_table(self.conn, "assign")
         create_table(self.conn, "settings")
 
-        self.calendar_cog = bot.get_cog('CalendarCog')
+        self.calendar_cog = bot.get_cog("CalendarCog")
 
         raids = get_all_raid_ids(self.conn)
         self.raids = [raid[0] for raid in raids]
         logger.info(f"We have loaded {len(self.raids)} raids in memory.")
 
-        self.calendar_cog = bot.get_cog('CalendarCog')
+        self.calendar_cog = bot.get_cog("CalendarCog")
 
     @slash_command(
         guild_ids=[902671732987551774, 826561483731107891]
@@ -189,8 +190,9 @@ class RaidCog(commands.Cog):
         ]
 
         for player in list_of_players:
-            insert_or_update_assignment(self.conn, player.player_id, raid_id, player.role, 0)
-
+            insert_or_update_assignment(
+                self.conn, player.player_id, raid_id, player.role, 0
+            )
 
     @background_task.before_loop
     async def before_background_task(self):

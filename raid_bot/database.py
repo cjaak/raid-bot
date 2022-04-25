@@ -27,7 +27,6 @@ def create_connection(db_file):
     return conn
 
 
-
 def create_table(conn: Connection, table_name: str):
     """create a database table"""
     query = get_table_creation_query(table_name)
@@ -216,16 +215,20 @@ def select_one_setup(conn: Connection, setup_id: int):
     except sqlite3.Error as e:
         logger.exception(e)
 
+
 def select_one_setup_by_name(conn: Connection, name: str, guild_id: int):
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM setup WHERE name = (?) AND guild_id = (?)", [name, guild_id])
+        cursor.execute(
+            "SELECT * FROM setup WHERE name = (?) AND guild_id = (?)", [name, guild_id]
+        )
         result = cursor.fetchone()
         if result and len(result) == 1:
             return result[0]
         return result
     except sqlite3.Error as e:
         logger.exception(e)
+
 
 def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
     try:
@@ -234,6 +237,7 @@ def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
         return cursor.fetchall()
     except sqlite3.Error as e:
         logger.exception(e)
+
 
 def insert_or_replace_setup(conn: Connection, setup_id: int, guild_id: int, name: str):
     try:
@@ -245,7 +249,9 @@ def insert_or_replace_setup(conn: Connection, setup_id: int, guild_id: int, name
         logger.exception(e)
 
 
-def insert_or_replace_setupplayer(conn: Connection, player_id: int, setup_id: int, role: str):
+def insert_or_replace_setupplayer(
+    conn: Connection, player_id: int, setup_id: int, role: str
+):
     try:
         cursor = conn.cursor()
         cursor.execute(
@@ -288,13 +294,11 @@ def select_assignments_by_role_for_raid(conn: Connection, raid_id: int, role: st
     except sqlite3.Error as e:
         logger.exception(e)
 
+
 def select_calendar(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()
-        cursor.execute(
-            "SELECT calendar FROM settings WHERE guild_id = ? ",
-            [guild_id]
-        )
+        cursor.execute("SELECT calendar FROM settings WHERE guild_id = ? ", [guild_id])
         return cursor.fetchone()
     except sqlite3.Error as e:
         logger.exception(e)

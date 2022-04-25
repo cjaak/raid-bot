@@ -48,7 +48,6 @@ class Bot(commands.Bot):
         intents.guilds = True
         intents.messages = True
 
-
         super().__init__(
             command_prefix="!",
             case_insensitive=True,

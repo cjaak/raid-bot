@@ -6,7 +6,11 @@ import discord
 from discord.ext import commands
 from discord.commands import slash_command, Option
 from raid_bot.models.raid_list_model import Raid
-from raid_bot.database import select_all_raids_by_guild_id, insert_or_replace_calendar, select_calendar
+from raid_bot.database import (
+    select_all_raids_by_guild_id,
+    insert_or_replace_calendar,
+    select_calendar,
+)
 
 sys.path.append("../")
 

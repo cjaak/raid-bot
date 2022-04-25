@@ -15,6 +15,7 @@ logger.setLevel(logging.INFO)
 
 VIEW_NAME = "SetupView"
 
+
 class SetupView(View):
     def __init__(self, conn: Connection):
         super().__init__(timeout=None)
@@ -33,7 +34,6 @@ class SetupView(View):
         )
 
         await interaction.response.edit_message(embed=embed, view=self)
-
 
 
 class SignUpButton(Button):
