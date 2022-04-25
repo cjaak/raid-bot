@@ -1,6 +1,5 @@
 from typing import List
 
-import self as self
 from discord import Interaction
 from discord.ext import commands, tasks
 import discord
@@ -51,6 +50,12 @@ RAIDS = [
     "The Ravagers",
     "Dread Fortress",
     "Dread Palace",
+    "Explosive Conflict"
+    "Eternity Vault"
+    "Karagga's Palace"
+    "Gods"
+    "Dxun"
+    "Random"
 ]
 
 
