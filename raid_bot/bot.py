@@ -10,7 +10,7 @@ import logging
 import os
 import re
 
-from database import create_connection
+from database import CONN, create_connection
 
 
 class Bot(commands.Bot):

@@ -12,6 +12,8 @@ import json
 import datetime
 import sys
 
+from raid_bot.cogs.setup.setup_view import SetupView
+
 sys.path.append("../")
 
 from raid_bot.models.sign_up_options import SignUpOptions, EMOJI
@@ -36,10 +38,19 @@ class SetupCog(commands.Cog):
 
     @slash_command(guild_ids=[902671732987551774, 826561483731107891])
     async def setup(self, ctx, name: Option(str, "Name this setup.")):
-        insert_or_replace_setup(self.conn, ctx.guild_id, name)
-        setup_id = str(ctx.guild_id) + str(name)
+
+        post = await ctx.send("\u200B")
+        setup_id = int(post.id)
+
+        insert_or_replace_setup(self.conn, setup_id, ctx.guild_id, name)
+        self.conn.commit()
+
         embed: discord.Embed = self.build_setup_embed(setup_id, name)
-        await ctx.respond(embed=embed)
+
+        await post.edit(embed=embed, view=SetupView(self.conn))
+
+        dummy = await ctx.respond("\u200B")
+        await dummy.delete_original_message(delay=None)
 
     def build_setup_embed(self, setup_id, name):
         sign_ups, total = self.build_players_for_setup(setup_id)

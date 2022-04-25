@@ -1,3 +1,6 @@
+from typing import List
+
+import self as self
 from discord import Interaction
 from discord.ext import commands, tasks
 import discord
@@ -20,6 +23,7 @@ from raid_bot.models.raid_model import Raid
 from raid_bot.models.raid_list_model import LIST_OF_RAIDS
 from raid_bot.cogs.time.time import Time
 from raid_bot.database import (
+    CONN,
     insert_raid,
     create_table,
     get_all_raid_ids,
@@ -27,7 +31,12 @@ from raid_bot.database import (
     select_one_raid,
     delete_raid,
     delete_assignment,
+    select_all_setup_names_for_guild,
+    select_one_setup_by_name, select_all_players_for_setup,
+    insert_or_update_assignment
 )
+from raid_bot.models.setup_model import Setup
+from raid_bot.models.setup_player_model import SetupPlayer
 
 sys.path.append("../")
 
@@ -75,7 +84,7 @@ class RaidCog(commands.Cog):
         mode: Option(str, "Choose the mode", choices=["SM", "HM", "NIM"]),
         time: Option(str, "Set the time"),
         description: Option(str, "Description", required=False),
-        setup: Option(str, "Choose a saved setup", required=False, choices=[]),
+        setup: Option(str, "Choose a saved setup", required=False),
     ):
         """Schedules a raid"""
         timestamp = Time().converter(self.bot, time)
@@ -85,6 +94,15 @@ class RaidCog(commands.Cog):
         raid_id = int(post.id)
 
         self.raids.append(raid_id)
+
+        if setup is not None:
+            result = select_one_setup_by_name(self.conn, setup, ctx.guild_id)
+            if result is None:
+                ctx.send(f"No setup named {setup} found", ephemeral=True)
+            else:
+                s = Setup(result)
+                logger.info(s)
+                self.fill_assignments_with_setup(s.setup_id, raid_id)
 
         insert_raid(
             self.conn,
@@ -163,6 +181,16 @@ class RaidCog(commands.Cog):
             self.raids.remove(raid_id)
         except ValueError:
             logger.info("Raid already deleted from memory.")
+
+    def fill_assignments_with_setup(self, setup_id, raid_id):
+        list_of_players: List[SetupPlayer] = [
+            SetupPlayer(item)
+            for item in select_all_players_for_setup(self.conn, setup_id)
+        ]
+
+        for player in list_of_players:
+            insert_or_update_assignment(self.conn, player.player_id, raid_id, player.role, 0)
+
 
     @background_task.before_loop
     async def before_background_task(self):

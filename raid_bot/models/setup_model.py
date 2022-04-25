@@ -4,11 +4,11 @@ from typing import List
 
 @dataclass
 class Setup:
+    setup_id: int
     guild_id: int
     name: str
-    setup_id: str
 
     def __init__(self, setup: List):
-        self.guild_id = setup[0]
-        self.name = setup[1]
-        self.setup_id = setup[2]
+        self.setup_id = setup[0]
+        self.guild_id = setup[1]
+        self.name = setup[2]

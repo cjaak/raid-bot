@@ -7,7 +7,7 @@ from typing import Union
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-CONN: Connection
+CONN: Connection = None
 
 
 def create_connection(db_file):
@@ -25,6 +25,7 @@ def create_connection(db_file):
         logger.exception(e)
         return None
     return conn
+
 
 
 def create_table(conn: Connection, table_name: str):
@@ -67,10 +68,10 @@ def get_table_creation_query(table_name: str):
         ),
         "setup": (
             "create table if not exists Setup ("
-            "setup_id text not null,"
+            "setup_id integer not null,"
             "guild_id integer not null, "
             "name text not null, "
-            "primary key (setup_id)"
+            "primary key (guild_id, name)"
             ");"
         ),
         "setup_players": (
@@ -103,7 +104,7 @@ def insert_raid(
     mode: str,
     description: str,
     timestamp: int,
-    setup: str,
+    setup: int,
 ):
     try:
         cursor = conn.cursor()
@@ -204,8 +205,37 @@ def insert_or_update_assignment(
         logger.exception(e)
 
 
-def insert_or_replace_setup(conn: Connection, guild_id: int, name: str):
-    setup_id: str = str(guild_id) + name
+def select_one_setup(conn: Connection, setup_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM setup WHERE setup_id = (?)", [setup_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+def select_one_setup_by_name(conn: Connection, name: str, guild_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM setup WHERE name = (?) AND guild_id = (?)", [name, guild_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM setup WHERE guild_id = ?", [guild_id])
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+def insert_or_replace_setup(conn: Connection, setup_id: int, guild_id: int, name: str):
     try:
         cursor = conn.cursor()
         cursor.execute(
@@ -215,10 +245,22 @@ def insert_or_replace_setup(conn: Connection, guild_id: int, name: str):
         logger.exception(e)
 
 
+def insert_or_replace_setupplayer(conn: Connection, player_id: int, setup_id: int, role: str):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT OR REPLACE INTO SetupPlayers VALUES (?, ?, ?)",
+            (player_id, setup_id, role),
+        )
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
 def select_all_players_for_setup(conn: Connection, setup_id):
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM setupplayers where setup_id = ?; ", [setup_id])
+        cursor.execute("SELECT * FROM SetupPlayers where setup_id = ?; ", [setup_id])
         return cursor.fetchall()
     except sqlite3.Error as e:
         logger.exception(e)
