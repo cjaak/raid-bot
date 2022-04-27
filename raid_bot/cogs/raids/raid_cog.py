@@ -75,9 +75,16 @@ class RaidCog(commands.Cog):
         logger.info(f"We have loaded {len(self.raids)} raids in memory.")
 
         self.calendar_cog = bot.get_cog("CalendarCog")
+        self.background_task.start()
+
+    async def cog_load(self):
+        self.background_task.start()
+
+    async def cog_unload(self):
+        self.background_task.cancel()
 
     @slash_command(
-        guild_ids=[902671732987551774, 826561483731107891]
+        guild_ids=[902671732987551774]
     )  # Create a slash command for the supplied guilds.
     async def raid(
         self,
@@ -144,13 +151,16 @@ class RaidCog(commands.Cog):
 
     @tasks.loop(seconds=300)
     async def background_task(self):
+        logger.info("background task started")
         expiry_time = 7200  # Delete raids after 2 hours.
         notify_time = 300  # Notify raiders 5 minutes before.
         current_time = datetime.datetime.now().timestamp()
 
         cutoff = current_time + 2 * notify_time
         raids = [Raid(item) for item in get_all_raids(self.conn)]
+        logger.info("NOW " + str(current_time))
         for raid in raids:
+            logger.info("RAID TIMESTAMP " + str(raid.timestamp))
             channel = self.bot.get_channel(raid.channel_id)
             if not channel:
                 await self.cleanup_old_raid(
@@ -171,6 +181,7 @@ class RaidCog(commands.Cog):
                     await self.cleanup_old_raid(
                         raid.raid_id, "Deleted expired raid post."
                     )
+                    logger.info("DELETING NOW")
                     await post.delete()
 
         self.conn.commit()

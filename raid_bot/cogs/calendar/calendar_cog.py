@@ -24,7 +24,7 @@ class CalendarCog(commands.Cog):
         self.bot = bot
         self.conn = bot.conn
 
-    @slash_command(guild_ids=[902671732987551774, 826561483731107891])
+    @slash_command(guild_ids=[902671732987551774])
     async def calendar(self, ctx):
         embed = self.build_calendar_embed(ctx.guild_id)
         msg = await ctx.send(embed=embed)

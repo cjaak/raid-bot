@@ -36,7 +36,7 @@ class SetupCog(commands.Cog):
         create_table(self.conn, "setup")
         create_table(self.conn, "setup_players")
 
-    @slash_command(guild_ids=[902671732987551774, 826561483731107891])
+    @slash_command(guild_ids=[902671732987551774])
     async def setup(self, ctx, name: Option(str, "Name this setup.")):
 
         post = await ctx.send("\u200B")
