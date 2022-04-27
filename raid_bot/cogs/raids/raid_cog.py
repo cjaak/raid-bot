@@ -84,7 +84,6 @@ class RaidCog(commands.Cog):
         self.background_task.cancel()
 
     @slash_command(
-        guild_ids=[902671732987551774]
     )  # Create a slash command for the supplied guilds.
     async def raid(
         self,
