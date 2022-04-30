@@ -42,14 +42,11 @@ class RaidView(View):
 
     async def settings(self, interaction: discord.Interaction):
 
-        if not interaction.message.author == interaction.user:
+        if not await self.raid_cog.has_raid_permission(interaction.user, interaction.message.id):
             perm_msg = "You do not have permission to change the raid settings."
             await interaction.response.send_message(perm_msg, ephemeral=True)
             return
-        msg = (
-            "Please select the setting to update or delete the raid.\n"
-            "(This selection message is ephemeral and will cease to work after 60s without interaction.)"
-        )
+
         modal = SettingsModal(self.raid_cog, interaction.message.id)
         await interaction.response.send_modal(modal)
 

@@ -236,6 +236,16 @@ class RaidCog(commands.Cog):
         logger.error("Raid background task failed.")
         logger.error(exception, exc_info=True)
 
+    async def has_raid_permission(self, user, raid_id):
+        if user.guild_permissions.administrator:
+            return True
+
+        author_id = Raid(select_one_raid(self.conn, raid_id))
+        if author_id == user.id:
+            return True
+
+        return False
+
 
 def setup(bot):
     bot.add_cog(RaidCog(bot))
