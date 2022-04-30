@@ -62,6 +62,7 @@ RAIDS = [
 class RaidCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.bot.loop.create_task(self.startup())
         self.conn = self.bot.conn
 
         create_table(self.conn, "raid")
@@ -76,6 +77,10 @@ class RaidCog(commands.Cog):
 
         self.calendar_cog = bot.get_cog("CalendarCog")
         self.background_task.start()
+
+    async def startup(self):
+        await self.bot.wait_until_ready()
+        self.bot.add_view(RaidView(self.conn))
 
     async def cog_load(self):
         self.background_task.start()
