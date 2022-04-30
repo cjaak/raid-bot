@@ -31,6 +31,7 @@ logger.setLevel(logging.INFO)
 class SetupCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.bot.loop.create_task(self.startup())
         self.conn = self.bot.conn
 
         create_table(self.conn, "setup")
@@ -51,6 +52,10 @@ class SetupCog(commands.Cog):
 
         dummy = await ctx.respond("\u200B")
         await dummy.delete_original_message(delay=None)
+
+    async def startup(self):
+        await self.bot.wait_until_ready()
+        self.bot.add_view(SetupView(self.conn))
 
     def build_setup_embed(self, setup_id, name):
         sign_ups, total = self.build_players_for_setup(setup_id)
