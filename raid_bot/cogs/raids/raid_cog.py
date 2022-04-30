@@ -149,7 +149,9 @@ class RaidCog(commands.Cog):
         except discord.HTTPException as e:
             logger.warning(e)
             msg = "The above error occurred sending the following messages as embed:"
-            error_msg = "\n".join([msg, embed.title, embed.description, str(embed.fields)])
+            error_msg = "\n".join(
+                [msg, embed.title, embed.description, str(embed.fields)]
+            )
             logger.warning(error_msg)
             await channel.send("That's an error. Check the logs.")
 

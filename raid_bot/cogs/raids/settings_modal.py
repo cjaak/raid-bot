@@ -65,35 +65,37 @@ class SettingsModal(discord.ui.Modal):
         self.add_item(delete_field)
 
     async def callback(self, interaction: discord.Interaction):
-        data = interaction.data['components']
+        data = interaction.data["components"]
         settings = {}
 
         for field in data:
-            settings[field['components'][0]["custom_id"]] = field['components'][0]['value']
+            settings[field["components"][0]["custom_id"]] = field["components"][0][
+                "value"
+            ]
 
         logger.info(settings)
 
-        if settings['delete'].lower() == 'delete':
+        if settings["delete"].lower() == "delete":
             await self.delete_raid(interaction)
             self.stop()
             return
 
         logger.info("Not exited after delete")
 
-        settings.pop('delete')
+        settings.pop("delete")
 
         resp_msg = "The raid settings have been successfully updated!"
 
-        if settings['time']:
+        if settings["time"]:
             try:
-                timestamp = Time().converter(self.raid_cog.bot, settings['time'])
+                timestamp = Time().converter(self.raid_cog.bot, settings["time"])
             except commands.BadArgument:
                 resp_msg = f"Failed to parse time argument: {settings['time']}"
-                settings.pop('time')
+                settings.pop("time")
             else:
-                settings['time'] = timestamp
+                settings["time"] = timestamp
         else:
-            settings.pop('time')
+            settings.pop("time")
 
         for key, value in settings.items():
             update_raid(self.conn, self.raid.raid_id, key, value)
@@ -118,7 +120,3 @@ class SettingsModal(discord.ui.Modal):
             pass
 
         await interaction.response.send_message("Raid was deleted", ephemeral=True)
-
-
-
-

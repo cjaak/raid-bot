@@ -40,9 +40,7 @@ class RaidView(View):
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-    async def settings(
-        self, interaction: discord.Interaction
-    ):
+    async def settings(self, interaction: discord.Interaction):
 
         if not interaction.message.author:
             perm_msg = "You do not have permission to change the raid settings."
