@@ -240,7 +240,7 @@ class RaidCog(commands.Cog):
         if user.guild_permissions.administrator:
             return True
 
-        author_id = Raid(select_one_raid(self.conn, raid_id))
+        author_id = Raid(select_one_raid(self.conn, raid_id)).author_id
         if author_id == user.id:
             return True
 
