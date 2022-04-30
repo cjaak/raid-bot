@@ -82,12 +82,6 @@ class RaidCog(commands.Cog):
         await self.bot.wait_until_ready()
         self.bot.add_view(RaidView(self))
 
-    async def cog_load(self):
-        self.background_task.start()
-
-    async def cog_unload(self):
-        self.background_task.cancel()
-
     @slash_command()  # Create a slash command for the supplied guilds.
     async def raid(
         self,

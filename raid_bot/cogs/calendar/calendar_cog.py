@@ -26,6 +26,7 @@ class CalendarCog(commands.Cog):
 
     @slash_command()
     async def calendar(self, ctx):
+        """Create a calendar containing all raids active on your server"""
         embed = self.build_calendar_embed(ctx.guild_id)
         msg = await ctx.send(embed=embed)
         ids = f"{ctx.channel.id}/{msg.id}"

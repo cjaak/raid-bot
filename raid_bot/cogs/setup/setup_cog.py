@@ -45,6 +45,7 @@ class SetupCog(commands.Cog):
 
     @slash_command()
     async def setup(self, ctx, name: Option(str, "Name this setup.")):
+        """Create a setup for your server"""
 
         post = await ctx.send("\u200B")
         setup_id = int(post.id)
