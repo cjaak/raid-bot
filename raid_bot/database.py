@@ -195,10 +195,18 @@ def insert_or_update_assignment(
 ):
     try:
         cursor = conn.cursor()
-        cursor.execute(
-            "INSERT OR REPLACE INTO assignment VALUES (?, ?, ?, ?)",
-            (raid_id, player_id, role, timestamp),
-        )
+
+        cursor.execute("SELECT * FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)", (player_id, raid_id, role))
+
+        result = cursor.fetchone()
+        logger.info(result)
+        if result:
+            cursor.execute("DELETE FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)", (player_id, raid_id, role))
+        else:
+            cursor.execute(
+                "INSERT OR REPLACE INTO assignment VALUES (?, ?, ?, ?)",
+                (raid_id, player_id, role, timestamp),
+            )
         return True
     except sqlite3.Error as e:
         logger.exception(e)
@@ -214,6 +222,7 @@ def select_one_setup(conn: Connection, setup_id: int):
         return result
     except sqlite3.Error as e:
         logger.exception(e)
+
 
 
 def select_one_setup_by_name(conn: Connection, name: str, guild_id: int):
@@ -253,11 +262,23 @@ def insert_or_replace_setupplayer(
     conn: Connection, player_id: int, setup_id: int, role: str
 ):
     try:
+
         cursor = conn.cursor()
-        cursor.execute(
-            "INSERT OR REPLACE INTO SetupPlayers VALUES (?, ?, ?)",
-            (player_id, setup_id, role),
-        )
+
+        cursor.execute("SELECT * FROM SetupPlayers WHERE player_id = (?) AND setup_id = (?) AND role = (?)",
+                       (player_id, setup_id, role))
+
+        result = cursor.fetchone()
+        logger.info(result)
+        if result:
+            cursor.execute("DELETE FROM SetupPlayers WHERE player_id = (?) AND setup_id = (?) AND role = (?)",
+                           (player_id, setup_id, role))
+        else:
+            cursor.execute(
+                "INSERT OR REPLACE INTO SetupPlayers VALUES (?, ?, ?)",
+                (player_id, setup_id, role),
+            )
+
         return True
     except sqlite3.Error as e:
         logger.exception(e)
