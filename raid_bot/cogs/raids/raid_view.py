@@ -42,7 +42,9 @@ class RaidView(View):
 
     async def settings(self, interaction: discord.Interaction):
 
-        if not await self.raid_cog.has_raid_permission(interaction.user, interaction.message.id):
+        if not await self.raid_cog.has_raid_permission(
+            interaction.user, interaction.message.id
+        ):
             perm_msg = "You do not have permission to change the raid settings."
             await interaction.response.send_message(perm_msg, ephemeral=True)
             return

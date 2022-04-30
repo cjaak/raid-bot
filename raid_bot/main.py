@@ -12,6 +12,7 @@ def main():
         "cogs.calendar.calendar_cog",
         "cogs.raids.raid_cog",
         "cogs.setup.setup_cog",
+        "cogs.utility.utility_cog",
     ]:
         bot.load_extension(ext)
     bot.run(bot.token)

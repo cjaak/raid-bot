@@ -24,7 +24,10 @@ from raid_bot.database import (
     insert_or_replace_setup,
     select_all_players_for_setup,
     create_table,
-    get_all_setup_ids, select_one_setup, delete_setup, delete_setupplayers
+    get_all_setup_ids,
+    select_one_setup,
+    delete_setup,
+    delete_setupplayers,
 )
 
 logger = logging.getLogger(__name__)
@@ -80,7 +83,8 @@ class SetupCog(commands.Cog):
         try:
             self.setups.remove(setup_id)
         except ValueError:
-            logger.info("Raid already deleted from memory.")
+            logger.info("Setup already deleted from memory.")
+
 
 def setup(bot):
     bot.add_cog(SetupCog(bot))

@@ -10,7 +10,7 @@ import logging
 import os
 import re
 
-from database import CONN, create_connection
+from database import create_connection
 
 
 class Bot(commands.Bot):
@@ -46,7 +46,12 @@ class Bot(commands.Bot):
 
         intents = discord.Intents.none()
         intents.guilds = True
-        intents.messages = True
+        intents.dm_messages = True
+
+        localization = gettext.translation(
+            "messages", localedir="locale", languages=["en"], fallback=True
+        )
+        localization.install()
 
         super().__init__(
             command_prefix="!",
