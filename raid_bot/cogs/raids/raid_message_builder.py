@@ -65,9 +65,12 @@ def build_player_sign_ups(
         for list_item in select_all_assignments_by_raid_id(conn, raid_id)
     ]
     logger.info(list_of_assignments)
+    number: int = 0
     for index, assignment in enumerate(list_of_assignments):
+        if assignment.timestamp > 0:
+            number += 1
         sign_ups[assignment.role].append(
-            f"`{index+1}` {EMOJI[assignment.role]} <@{assignment.player_id}>"
+            f"`{number}` {EMOJI[assignment.role]} <@{assignment.player_id}>"
         )
     total = len(list_of_assignments)
     return sign_ups, total

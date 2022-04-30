@@ -55,7 +55,7 @@ def build_players_for_setup(conn: Connection, setup_id: int):
 
     for index, player in enumerate(list_of_players):
         sign_ups[player.role].append(
-            f"`{index + 1}` {EMOJI[player.role]} <@{player.player_id}>"
+            f"{EMOJI[player.role]} <@{player.player_id}>"
         )
     total = len(list_of_players)
 
