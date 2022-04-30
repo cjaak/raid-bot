@@ -196,11 +196,17 @@ def insert_or_update_assignment(
     try:
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)", (player_id, raid_id, role))
+        cursor.execute(
+            "SELECT * FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)",
+            (player_id, raid_id, role),
+        )
 
         result = cursor.fetchone()
         if result:
-            cursor.execute("DELETE FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)", (player_id, raid_id, role))
+            cursor.execute(
+                "DELETE FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)",
+                (player_id, raid_id, role),
+            )
         else:
             cursor.execute(
                 "INSERT OR REPLACE INTO assignment VALUES (?, ?, ?, ?)",
@@ -221,7 +227,6 @@ def select_one_setup(conn: Connection, setup_id: int):
         return result
     except sqlite3.Error as e:
         logger.exception(e)
-
 
 
 def select_one_setup_by_name(conn: Connection, name: str, guild_id: int):
@@ -264,13 +269,17 @@ def insert_or_replace_setupplayer(
 
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM SetupPlayers WHERE player_id = (?) AND setup_id = (?) AND role = (?)",
-                       (player_id, setup_id, role))
+        cursor.execute(
+            "SELECT * FROM SetupPlayers WHERE player_id = (?) AND setup_id = (?) AND role = (?)",
+            (player_id, setup_id, role),
+        )
 
         result = cursor.fetchone()
         if result:
-            cursor.execute("DELETE FROM SetupPlayers WHERE player_id = (?) AND setup_id = (?) AND role = (?)",
-                           (player_id, setup_id, role))
+            cursor.execute(
+                "DELETE FROM SetupPlayers WHERE player_id = (?) AND setup_id = (?) AND role = (?)",
+                (player_id, setup_id, role),
+            )
         else:
             cursor.execute(
                 "INSERT OR REPLACE INTO SetupPlayers VALUES (?, ?, ?)",

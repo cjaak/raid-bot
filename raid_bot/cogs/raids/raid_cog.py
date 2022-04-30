@@ -50,12 +50,7 @@ RAIDS = [
     "The Ravagers",
     "Dread Fortress",
     "Dread Palace",
-    "Explosive Conflict"
-    "Eternity Vault"
-    "Karagga's Palace"
-    "Gods"
-    "Dxun"
-    "Random"
+    "Explosive Conflict" "Eternity Vault" "Karagga's Palace" "Gods" "Dxun" "Random",
 ]
 
 
@@ -88,8 +83,7 @@ class RaidCog(commands.Cog):
     async def cog_unload(self):
         self.background_task.cancel()
 
-    @slash_command(
-    )  # Create a slash command for the supplied guilds.
+    @slash_command()  # Create a slash command for the supplied guilds.
     async def raid(
         self,
         ctx,
