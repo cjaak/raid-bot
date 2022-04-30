@@ -50,7 +50,12 @@ RAIDS = [
     "The Ravagers",
     "Dread Fortress",
     "Dread Palace",
-    "Explosive Conflict" "Eternity Vault" "Karagga's Palace" "Gods" "Dxun" "Random",
+    "Explosive Conflict",
+    "Eternity Vault",
+    "Karagga's Palace",
+    "Gods",
+    "Dxun",
+    "Random",
 ]
 
 
