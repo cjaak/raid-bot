@@ -243,6 +243,31 @@ def select_one_setup_by_name(conn: Connection, name: str, guild_id: int):
         logger.exception(e)
 
 
+def get_all_setup_ids(conn: Connection):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM setup")
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def delete_setup(conn: Connection, setup_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM setup WHERE setup_id = ?", [setup_id])
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def delete_setupplayers(conn: Connection, setup_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM setupplayers WHERE setup_id = ?", [setup_id])
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
 def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()

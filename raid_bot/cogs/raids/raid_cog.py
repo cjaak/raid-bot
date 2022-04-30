@@ -177,9 +177,7 @@ class RaidCog(commands.Cog):
 
         cutoff = current_time + 2 * notify_time
         raids = [Raid(item) for item in get_all_raids(self.conn)]
-        logger.info("NOW " + str(current_time))
         for raid in raids:
-            logger.info("RAID TIMESTAMP " + str(raid.timestamp))
             channel = self.bot.get_channel(raid.channel_id)
             if not channel:
                 await self.cleanup_old_raid(
