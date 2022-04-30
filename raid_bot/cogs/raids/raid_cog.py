@@ -75,7 +75,7 @@ class RaidCog(commands.Cog):
 
     async def startup(self):
         await self.bot.wait_until_ready()
-        self.bot.add_view(RaidView(self.conn))
+        self.bot.add_view(RaidView(self))
 
     async def cog_load(self):
         self.background_task.start()
@@ -131,13 +131,27 @@ class RaidCog(commands.Cog):
         self.conn.commit()
 
         raid_embed: discord.Embed = build_raid_message(self.conn, raid_id)
-        await post.edit(embed=raid_embed, view=RaidView(self.conn))
+        await post.edit(embed=raid_embed, view=RaidView(self))
 
         await self.calendar_cog.update_calendar(ctx.guild_id)
 
         # workaround because `respond` seems to be required.
         dummy = await ctx.respond("\u200B")
         await dummy.delete_original_message(delay=None)
+
+    async def update_raid_post(self, raid_id, channel):
+        embed: discord.Embed = build_raid_message(self.conn, raid_id)
+        if not embed:
+            return
+        post = channel.get_partial_message(raid_id)
+        try:
+            await post.edit(embed=embed)
+        except discord.HTTPException as e:
+            logger.warning(e)
+            msg = "The above error occurred sending the following messages as embed:"
+            error_msg = "\n".join([msg, embed.title, embed.description, str(embed.fields)])
+            logger.warning(error_msg)
+            await channel.send("That's an error. Check the logs.")
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
