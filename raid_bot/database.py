@@ -199,7 +199,6 @@ def insert_or_update_assignment(
         cursor.execute("SELECT * FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)", (player_id, raid_id, role))
 
         result = cursor.fetchone()
-        logger.info(result)
         if result:
             cursor.execute("DELETE FROM assignment WHERE player_id = (?) AND raid_id = (?) AND role = (?)", (player_id, raid_id, role))
         else:
@@ -269,7 +268,6 @@ def insert_or_replace_setupplayer(
                        (player_id, setup_id, role))
 
         result = cursor.fetchone()
-        logger.info(result)
         if result:
             cursor.execute("DELETE FROM SetupPlayers WHERE player_id = (?) AND setup_id = (?) AND role = (?)",
                            (player_id, setup_id, role))

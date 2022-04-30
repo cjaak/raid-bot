@@ -39,8 +39,8 @@ class RaidView(View):
 
 class SignUpButton(Button):
     def __init__(self, option: str):
-        super().__init__(emoji=EMOJI[option], custom_id=option)
+        super().__init__(emoji=EMOJI[option], custom_id=f"raid_{option}")
 
     async def callback(self, interaction: discord.Interaction):
-        role: str = self.custom_id
+        _, role = self.custom_id.split("_")
         await self.view.handle_click_role(role, interaction)
