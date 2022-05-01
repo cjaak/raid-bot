@@ -1,15 +1,13 @@
+import logging
 import time
+
 import discord.ui
 from discord.ui import Button, View
-from sqlite3 import Connection
-import logging
 
-from raid_bot.cogs.raids.settings_modal import SettingsModal
-from raid_bot.models.raid_model import Raid
-from raid_bot.database import select_one_raid, insert_or_update_assignment
 from raid_bot.cogs.raids import raid_message_builder
+from raid_bot.cogs.raids.settings_modal import SettingsModal
+from raid_bot.database import insert_or_update_assignment
 from raid_bot.models.sign_up_options import SignUpOptions, EMOJI
-
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

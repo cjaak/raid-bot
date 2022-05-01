@@ -1,6 +1,6 @@
-from bot import Bot
 import sys
-from dotenv import load_dotenv
+
+from bot import Bot
 
 sys.path.append("./")
 

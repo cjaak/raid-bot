@@ -1,28 +1,19 @@
+import datetime
+import logging
+import sys
 from typing import List
 
-from discord import Interaction
-from discord.ext import commands, tasks
 import discord
-
-import asyncio
-
-from discord.ui import Button, View
 from discord.commands import (
     slash_command,
     Option,
 )  # Importing the decorator that makes slash commands.
-import logging
-import json
-import datetime
-import sys
+from discord.ext import commands, tasks
 
-from raid_bot.cogs.raids.raid_view import RaidView
 from raid_bot.cogs.raids.raid_message_builder import build_raid_message
-from raid_bot.models.raid_model import Raid
-from raid_bot.models.raid_list_model import LIST_OF_RAIDS
+from raid_bot.cogs.raids.raid_view import RaidView
 from raid_bot.cogs.time.time import Time
 from raid_bot.database import (
-    CONN,
     insert_raid,
     create_table,
     get_all_raid_ids,
@@ -30,11 +21,11 @@ from raid_bot.database import (
     select_one_raid,
     delete_raid,
     delete_assignment,
-    select_all_setup_names_for_guild,
     select_one_setup_by_name,
     select_all_players_for_setup,
     insert_or_update_assignment,
 )
+from raid_bot.models.raid_model import Raid
 from raid_bot.models.setup_model import Setup
 from raid_bot.models.setup_player_model import SetupPlayer
 

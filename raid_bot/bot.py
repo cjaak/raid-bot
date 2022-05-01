@@ -1,14 +1,12 @@
+import gettext
+import json
+import logging
+import os
 from datetime import datetime
-from typing import List
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-import gettext
-import json
-import locale
-import logging
-import os
-import re
 
 from database import create_connection
 

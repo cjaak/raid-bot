@@ -1,31 +1,22 @@
-from discord.ui import Button, View
-from typing import List
-import discord
 import logging
-from discord.ext import commands, tasks
+import sys
+
+import discord
 from discord.commands import (
     slash_command,
     Option,
 )  # Importing the decorator that makes slash commands.
-import logging
-import json
-import datetime
-import sys
+from discord.ext import commands
 
 from raid_bot.cogs.setup.setup_message_builder import build_setup_embed
 from raid_bot.cogs.setup.setup_view import SetupView
-from raid_bot.models.setup_model import Setup
 
 sys.path.append("../")
 
-from raid_bot.models.sign_up_options import SignUpOptions, EMOJI
-from raid_bot.models.setup_player_model import SetupPlayer
 from raid_bot.database import (
     insert_or_replace_setup,
-    select_all_players_for_setup,
     create_table,
     get_all_setup_ids,
-    select_one_setup,
     delete_setup,
     delete_setupplayers,
 )
