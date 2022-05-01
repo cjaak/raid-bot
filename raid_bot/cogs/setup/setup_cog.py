@@ -44,7 +44,9 @@ class SetupCog(commands.Cog):
         post = await ctx.send("\u200B")
         setup_id = int(post.id)
 
-        insert_or_replace_setup(self.conn, setup_id, ctx.guild_id, name)
+        processed_name = name.lower().strip()
+
+        insert_or_replace_setup(self.conn, setup_id, ctx.guild_id, ctx.channel.id, processed_name)
         self.conn.commit()
 
         embed: discord.Embed = build_setup_embed(self.conn, setup_id)

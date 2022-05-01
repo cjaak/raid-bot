@@ -69,6 +69,7 @@ def get_table_creation_query(table_name: str):
             "create table if not exists Setup ("
             "setup_id integer not null,"
             "guild_id integer not null, "
+            "channel_id integer not null,"
             "name text not null, "
             "primary key (guild_id, name)"
             ");"
@@ -246,7 +247,7 @@ def select_one_setup_by_name(conn: Connection, name: str, guild_id: int):
 def get_all_setup_ids(conn: Connection):
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM setup")
+        cursor.execute("SELECT setup_id FROM setup")
         return cursor.fetchall()
     except sqlite3.Error as e:
         logger.exception(e)
@@ -277,11 +278,11 @@ def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
         logger.exception(e)
 
 
-def insert_or_replace_setup(conn: Connection, setup_id: int, guild_id: int, name: str):
+def insert_or_replace_setup(conn: Connection, setup_id: int, guild_id: int, channel_id: int,name: str):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?)", (setup_id, guild_id, name)
+            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?, ?)", (setup_id, guild_id, channel_id, name)
         )
     except sqlite3.Error as e:
         logger.exception(e)

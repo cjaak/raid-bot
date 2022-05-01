@@ -41,9 +41,11 @@ class CalendarCog(commands.Cog):
         return
 
     async def update_calendar(self, guild_id, new_run=True):
-        calendar_id = select_calendar(self.conn, guild_id)[0]
+        calendar_id = select_calendar(self.conn, guild_id)
         if not calendar_id:
             return
+        else:
+            calendar_id = calendar_id[0]
         ids = calendar_id.split("/")
         channel_id = ids[0]
         msg_id = ids[1]

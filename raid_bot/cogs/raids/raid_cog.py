@@ -97,9 +97,10 @@ class RaidCog(commands.Cog):
         self.raids.append(raid_id)
 
         if setup is not None:
-            result = select_one_setup_by_name(self.conn, setup, ctx.guild_id)
+            setup_name = setup.lower().strip()
+            result = select_one_setup_by_name(self.conn, setup_name, ctx.guild_id)
             if result is None:
-                await ctx.send(f"No setup named {setup} found")
+                await ctx.send(f"No setup named {setup_name} found")
             else:
                 s = Setup(result)
                 logger.info(s)
