@@ -1,4 +1,3 @@
-import time
 import discord.ui
 from discord.ext import commands
 from discord.ui import Button, View
@@ -12,7 +11,7 @@ from raid_bot.models.raid_model import Raid
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-MODAL_NAME = "ConfigureModal"
+MODAL_NAME = "SettingsModal"
 
 
 class SettingsModal(discord.ui.Modal):

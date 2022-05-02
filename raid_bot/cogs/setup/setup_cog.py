@@ -46,7 +46,9 @@ class SetupCog(commands.Cog):
 
         processed_name = name.lower().strip()
 
-        insert_or_replace_setup(self.conn, setup_id, ctx.guild_id, ctx.channel.id, processed_name)
+        insert_or_replace_setup(
+            self.conn, setup_id, ctx.guild_id, ctx.channel.id, processed_name
+        )
         self.conn.commit()
 
         embed: discord.Embed = build_setup_embed(self.conn, setup_id)

@@ -90,6 +90,34 @@ def get_table_creation_query(table_name: str):
             "primary key (guild_id)"
             ");"
         ),
+        "polls": (
+            "create table if not exists Polls ("
+            "poll_id integer not null,"
+            "channel_id integer not null, "
+            "guild_id integer not null, "
+            "author_id integer not null, "
+            "question text,"
+            "number_of_options text,"
+            "multiple_selection int,"
+            "primary key (poll_id)"
+            ");"
+        ),
+        "poll_options": (
+            "create table if not exists PollOptions ("
+            "poll_id integer not null,"
+            "option_id integer not null, "
+            "option text,"
+            "primary key (poll_id, option_id)"
+            ");"
+        ),
+        "poll_votes": (
+            "create table if not exists votes ("
+            "poll_id integer not null,"
+            "option_id text not null, "
+            "user_id integer not null, "
+            "primary key (poll_id, user_id)"
+            ");"
+        ),
     }
     return sql_dict[table_name]
 
@@ -278,11 +306,14 @@ def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
         logger.exception(e)
 
 
-def insert_or_replace_setup(conn: Connection, setup_id: int, guild_id: int, channel_id: int,name: str):
+def insert_or_replace_setup(
+    conn: Connection, setup_id: int, guild_id: int, channel_id: int, name: str
+):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?, ?)", (setup_id, guild_id, channel_id, name)
+            "INSERT OR REPLACE INTO setup VALUES (?, ?, ?, ?)",
+            (setup_id, guild_id, channel_id, name),
         )
     except sqlite3.Error as e:
         logger.exception(e)
@@ -366,5 +397,165 @@ def insert_or_replace_calendar(conn: Connection, guild_id: int, ids: str):
             (guild_id, ids),
         )
         return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def insert_or_replace_poll(
+    conn: Connection,
+    poll_id: int,
+    channel_id: int,
+    guild_id: int,
+    author_id: int,
+    number_of_options: int,
+    multiple_selection: bool,
+):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT OR REPLACE INTO polls(poll_id, channel_id, guild_id, author_id, number_of_options, "
+            "multiple_selection) VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                poll_id,
+                channel_id,
+                guild_id,
+                author_id,
+                number_of_options,
+                multiple_selection,
+            ),
+        )
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def set_question_for_poll(conn: Connection, poll_id: int, question: str):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            f"UPDATE polls SET question = ? WHERE poll_id = {poll_id}", [question]
+        )
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_one_poll(conn: Connection, poll_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM polls WHERE poll_id = (?)", [poll_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_options_for_poll(conn: Connection, poll_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM PollOptions WHERE poll_id = ?", [poll_id])
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def insert_or_replace_poll_option(conn: Connection, poll_id, option_id, option):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT OR REPLACE INTO PollOptions VALUES (?, ?, ?)",
+            (poll_id, option_id, option),
+        )
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def insert_or_replace_vote(conn: Connection, user_id: int, poll_id: int, option_id: int):
+    try:
+
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT * FROM votes WHERE user_id = (?) AND poll_id = (?) AND option_id = (?)",
+            (user_id, poll_id, str(option_id)),
+        )
+
+        result = cursor.fetchone()
+        if result:
+            cursor.execute(
+                "DELETE FROM votes WHERE user_id = (?) AND poll_id = (?) AND option_id = (?)",
+                (user_id, poll_id, str(option_id)),
+            )
+            return []
+        else:
+            cursor.execute(
+                "INSERT OR REPLACE INTO votes VALUES (?, ?, ?)",
+                (poll_id, str(option_id), user_id),
+            )
+        return [option_id]
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def count_votes(conn: Connection, poll_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM votes WHERE poll_id = ?", [poll_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def delete_poll_votes_options(conn: Connection, poll_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM votes WHERE poll_id = ?", [poll_id])
+        cursor.execute("DELETE FROM pollOptions WHERE poll_id = ?", [poll_id])
+        cursor.execute("DELETE FROM polls WHERE poll_id = ?", [poll_id])
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def count_votes_for_option(conn: Connection, option_id, poll_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM votes WHERE poll_id = {poll_id} AND option_id LIKE ?", [f"%{option_id}%"])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def set_or_add_vote(conn: Connection, user_id, poll_id, option_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM votes WHERE poll_id = {poll_id} AND user_id = {user_id}")
+        result = cursor.fetchone()
+        if result[0] == 0:
+            cursor.execute(
+                "INSERT INTO votes VALUES (?, ?, ?)",
+                (poll_id, f"{option_id};", user_id),
+            )
+            return [f"{option_id}"]
+        cursor.execute(f"SELECT option_id FROM votes WHERE poll_id = {poll_id} AND user_id = {user_id}")
+        ids = cursor.fetchone()[0]
+        if str(option_id) in ids:
+            ids = ids.replace(f"{option_id};", "")
+        else:
+            ids = f"{ids}{option_id};"
+
+        cursor.execute(
+            f"UPDATE votes SET option_id = (?) WHERE poll_id = {poll_id} AND user_id = {user_id}",
+            [str(ids)],
+        )
+        return ids.split(";")
     except sqlite3.Error as e:
         logger.exception(e)

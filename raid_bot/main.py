@@ -13,6 +13,7 @@ def main():
         "cogs.raids.raid_cog",
         "cogs.setup.setup_cog",
         "cogs.utility.utility_cog",
+        "cogs.poll.poll_cog",
     ]:
         bot.load_extension(ext)
     bot.run(bot.token)

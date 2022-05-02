@@ -127,8 +127,7 @@ class RaidCog(commands.Cog):
         await self.calendar_cog.update_calendar(ctx.guild_id)
 
         # workaround because `respond` seems to be required.
-        dummy = await ctx.respond("\u200B")
-        await dummy.delete_original_message(delay=None)
+        await ctx.respond("\u200B", delete_after=1)
 
     async def update_raid_post(self, raid_id, channel):
         embed: discord.Embed = build_raid_message(self.conn, raid_id)
