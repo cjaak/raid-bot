@@ -472,7 +472,9 @@ def insert_or_replace_poll_option(conn: Connection, poll_id, option_id, option):
         logger.exception(e)
 
 
-def insert_or_replace_vote(conn: Connection, user_id: int, poll_id: int, option_id: int):
+def insert_or_replace_vote(
+    conn: Connection, user_id: int, poll_id: int, option_id: int
+):
     try:
 
         cursor = conn.cursor()
@@ -525,7 +527,10 @@ def delete_poll_votes_options(conn: Connection, poll_id):
 def count_votes_for_option(conn: Connection, option_id, poll_id):
     try:
         cursor = conn.cursor()
-        cursor.execute(f"SELECT COUNT(*) FROM votes WHERE poll_id = {poll_id} AND option_id LIKE ?", [f"%{option_id}%"])
+        cursor.execute(
+            f"SELECT COUNT(*) FROM votes WHERE poll_id = {poll_id} AND option_id LIKE ?",
+            [f"%{option_id}%"],
+        )
         result = cursor.fetchone()
         if result and len(result) == 1:
             return result[0]
@@ -537,7 +542,9 @@ def count_votes_for_option(conn: Connection, option_id, poll_id):
 def set_or_add_vote(conn: Connection, user_id, poll_id, option_id):
     try:
         cursor = conn.cursor()
-        cursor.execute(f"SELECT COUNT(*) FROM votes WHERE poll_id = {poll_id} AND user_id = {user_id}")
+        cursor.execute(
+            f"SELECT COUNT(*) FROM votes WHERE poll_id = {poll_id} AND user_id = {user_id}"
+        )
         result = cursor.fetchone()
         if result[0] == 0:
             cursor.execute(
@@ -545,7 +552,9 @@ def set_or_add_vote(conn: Connection, user_id, poll_id, option_id):
                 (poll_id, f"{option_id};", user_id),
             )
             return [f"{option_id}"]
-        cursor.execute(f"SELECT option_id FROM votes WHERE poll_id = {poll_id} AND user_id = {user_id}")
+        cursor.execute(
+            f"SELECT option_id FROM votes WHERE poll_id = {poll_id} AND user_id = {user_id}"
+        )
         ids = cursor.fetchone()[0]
         if str(option_id) in ids:
             ids = ids.replace(f"{option_id};", "")

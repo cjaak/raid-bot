@@ -8,7 +8,9 @@ from raid_bot.database import (
     select_one_raid,
     select_all_assignments_by_raid_id,
     select_one_poll,
-    select_options_for_poll, count_votes, count_votes_for_option,
+    select_options_for_poll,
+    count_votes,
+    count_votes_for_option,
 )
 from raid_bot.models.assignment_model import Assignment
 from raid_bot.models.poll_emoji import POLL_EMOJI, OpinionOptions, OPINION_EMOJI
@@ -34,9 +36,7 @@ def build_poll_message(conn: Connection, poll_id: int):
 
     for option in list_of_options:
         name_field = f"{POLL_EMOJI[option.option_id]}: {option.option}"
-        embed.add_field(
-            name=name_field, value="\u200B", inline=False
-        )
+        embed.add_field(name=name_field, value="\u200B", inline=False)
 
     return embed
 
@@ -44,7 +44,9 @@ def build_poll_message(conn: Connection, poll_id: int):
 def build_poll_result_message(conn: Connection, poll_id: int):
     poll: Poll = Poll(select_one_poll(conn, poll_id))
     votes = count_votes(conn, poll_id)
-    embed = discord.Embed(title=f"RESULT: {poll.question}", description=f"{votes} people voted")
+    embed = discord.Embed(
+        title=f"RESULT: {poll.question}", description=f"{votes} people voted"
+    )
 
     list_of_options: List[PollOption] = [
         PollOption(list_item) for list_item in select_options_for_poll(conn, poll_id)
@@ -55,9 +57,7 @@ def build_poll_result_message(conn: Connection, poll_id: int):
         percentage = get_percentage(result, votes)
         value = f"{result} votes ({percentage})"
         name_field = f"{POLL_EMOJI[option.option_id]}: {option.option}"
-        embed.add_field(
-            name=name_field, value=value, inline=False
-        )
+        embed.add_field(name=name_field, value=value, inline=False)
 
     return embed
 
@@ -82,8 +82,8 @@ def build_opinion_message(conn: Connection, poll_id: int):
         perc_no = get_percentage(opinion_no, votes)
 
     embed.add_field(
-        name=f"Opinion: {opinion}", value=f"{OPINION_EMOJI[OpinionOptions.YES]}\t {perc_yes} \n \n {OPINION_EMOJI[OpinionOptions.NO]}\t {perc_no}"
+        name=f"Opinion: {opinion}",
+        value=f"{OPINION_EMOJI[OpinionOptions.YES]}\t {perc_yes} \n \n {OPINION_EMOJI[OpinionOptions.NO]}\t {perc_no}",
     )
 
     return embed
-

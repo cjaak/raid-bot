@@ -55,8 +55,10 @@ class PollModal(discord.ui.Modal):
         data.pop("poll_question")
 
         for key, value in data.items():
-            _, option_id = key.split('_')
-            insert_or_replace_poll_option(self.conn, self.poll.poll_id, option_id, value)
+            _, option_id = key.split("_")
+            insert_or_replace_poll_option(
+                self.conn, self.poll.poll_id, option_id, value
+            )
 
         self.conn.commit()
 

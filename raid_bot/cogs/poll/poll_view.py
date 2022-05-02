@@ -5,7 +5,12 @@ import discord.ui
 from discord.ui import Button, View
 
 from raid_bot.cogs.poll import poll_message_builder
-from raid_bot.database import insert_or_replace_vote, select_one_poll, delete_poll_votes_options, set_or_add_vote
+from raid_bot.database import (
+    insert_or_replace_vote,
+    select_one_poll,
+    delete_poll_votes_options,
+    set_or_add_vote,
+)
 from raid_bot.models.poll_emoji import POLL_EMOJI
 from raid_bot.models.poll_model import Poll
 
@@ -54,7 +59,9 @@ class PollView(View):
         poll_id = interaction.message.id
         user_id = interaction.user.id
         if not await self.poll_cog.has_poll_permission(poll_id, user_id):
-            await interaction.response.send_message("You do not have permission to do that")
+            await interaction.response.send_message(
+                "You do not have permission to do that"
+            )
             return
 
         embed = poll_message_builder.build_poll_result_message(self.conn, poll_id)
@@ -89,7 +96,9 @@ class VoteButton(Button):
 
 class EndPollButton(Button):
     def __init__(self):
-        super().__init__(label="END POLL", custom_id=f"poll_end", style=discord.ButtonStyle.green)
+        super().__init__(
+            label="END POLL", custom_id=f"poll_end", style=discord.ButtonStyle.green
+        )
 
     async def callback(self, interaction: discord.Interaction):
         await self.view.handle_end_poll(interaction)

@@ -6,7 +6,12 @@ from raid_bot.cogs.poll import poll_message_builder
 from raid_bot.cogs.poll.opinion_view import OpinionView
 from raid_bot.cogs.poll.poll_modal import PollModal
 from raid_bot.cogs.poll.poll_view import PollView
-from raid_bot.database import insert_or_replace_poll, create_table, select_one_poll, set_question_for_poll
+from raid_bot.database import (
+    insert_or_replace_poll,
+    create_table,
+    select_one_poll,
+    set_question_for_poll,
+)
 from raid_bot.models.poll_model import Poll
 
 logger = logging.getLogger(__name__)
