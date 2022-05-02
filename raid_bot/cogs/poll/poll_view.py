@@ -78,8 +78,6 @@ class PollView(View):
         return msg
 
 
-
-
 class VoteButton(Button):
     def __init__(self, option: int):
         super().__init__(emoji=POLL_EMOJI[option], custom_id=f"poll_{option}")
