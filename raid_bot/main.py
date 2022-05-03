@@ -14,6 +14,7 @@ def main():
         "cogs.setup.setup_cog",
         "cogs.utility.utility_cog",
         "cogs.poll.poll_cog",
+        "cogs.stat_calculator.stat_calculator_cog",
     ]:
         bot.load_extension(ext)
     bot.run(bot.token)
