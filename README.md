@@ -42,3 +42,22 @@ When there's only the time specified the event will be scheduled for this day.
 ![Example: Raid](demo-screenshots/example-raid.png)
 
 
+## Command overview
+
+### Scheduling commands
+
+| Command                                                        | Example                                                                                   | Notes                                                                                                                                                                                                        |
+|----------------------------------------------------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **/setup** \<name\>                                            | /setup Team-A                                                                             | Creates a setup sign-up message. All user that sign up will be automatically signed up for any raids that use this setups name in its configuration.                                                         |
+| **/raid** \<name\> \<mode\> \<time\> \[description\] \[setup\] | /raid Terror from beyond NIM tomorrow 20:00, <br> /raid Dxun SM fri 8pm be on time Team-A | Schedules a Raid. Name and mode parameters can be chosen from a dropdown menu. Description and setup are optional.                                                                                           |
+| **/calendar**                                                  | /calendar channel                                                                         | Provides an overview of all scheduled runs for the upcoming week, with direct links to the raid posts. This command will only have to be run once as the calendar will automatically populate with new runs. |
+
+
+### Poll commands
+| Command                                                 | Example                               | Notes                                                                                                                                                                                                                                                                    |
+|---------------------------------------------------------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **/opinion** \<on\>                                     | /opinion Does Ananas belong on pizza? | Creates a simple yes/no/I don't care poll. Displays the ratio of up and down votes immediately                                                                                                                                                                           |
+| **/poll** \<number_of_options\> \[multiple_selection\]  | /poll 4 True, <br> /poll 2            | Shows the author a dialog in which they can specify the answer options. Only the number of votes is displayed immediately. When the author ends the poll the results will be displayed. The option to select multiple answers is by default disabled, but can be enabled |
+
+
+
