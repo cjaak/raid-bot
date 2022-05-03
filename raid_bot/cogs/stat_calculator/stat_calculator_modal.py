@@ -1,4 +1,5 @@
 import json
+import pprint
 from typing import List, Dict
 
 import discord.ui
@@ -105,8 +106,9 @@ class StatCalculatorModal(discord.ui.Modal):
         configuration[f"AUGMENT_VALUE"] = augment_value
         configuration[f"MAX_DEVIATION"] = deviation
 
+        pretty_dict_input = pprint.pformat(configuration)
         await interaction.response.send_message(
-            f"```{json.dumps(configuration)}" f"```"
+            f"```{pretty_dict_input}```"
         )
 
         first_stat_combinations = self.find_combinations(
@@ -125,7 +127,8 @@ class StatCalculatorModal(discord.ui.Modal):
         else:
             complete_combinations = self.fill_rest_combination(first_stat_combinations)
 
-        await interaction.followup.send(f"``` {complete_combinations}```")
+        pretty_dict_str = pprint.pformat(complete_combinations)
+        await interaction.followup.send(f"``` {pretty_dict_str}```")
 
         self.stop()
 
