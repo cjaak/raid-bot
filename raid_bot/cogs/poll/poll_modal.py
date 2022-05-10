@@ -29,11 +29,6 @@ class PollModal(discord.ui.Modal):
 
         self.poll = Poll(select_one_poll(self.conn, poll_id))
 
-        question_field = InputText(
-            custom_id="poll_question", label="Question", required=True, max_length=1024
-        )
-        self.add_item(question_field)
-
         for field in range(number_of_options):
             self.add_item(
                 InputText(
@@ -50,9 +45,6 @@ class PollModal(discord.ui.Modal):
 
         for field in u_input:
             data[field["components"][0]["custom_id"]] = field["components"][0]["value"]
-
-        set_question_for_poll(self.conn, self.poll.poll_id, data["poll_question"])
-        data.pop("poll_question")
 
         for key, value in data.items():
             _, option_id = key.split("_")

@@ -3,6 +3,7 @@ from discord.ext import commands
 import logging
 
 from raid_bot.cogs.poll import poll_message_builder
+from raid_bot.cogs.poll.choice_modal import ChoiceModal
 from raid_bot.cogs.poll.opinion_view import OpinionView
 from raid_bot.cogs.poll.poll_modal import PollModal
 from raid_bot.cogs.poll.poll_view import PollView
@@ -36,8 +37,9 @@ class PollCog(commands.Cog):
     async def poll(
         self,
         ctx,
+        question: Option(str, "What is the poll about?"),
         number_of_options: Option(
-            int, "Specify number of poll options", choices=[1, 2, 3, 4]
+            int, "Specify number of poll options", choices=[1, 2, 3, 4, 5]
         ),
         multiple_selection: Option(
             bool, "Check if multiple selection should be allowed", required=False
@@ -56,6 +58,7 @@ class PollCog(commands.Cog):
             number_of_options,
             bool(multiple_selection),
         )
+        set_question_for_poll(self.conn, poll_id, question)
 
         self.conn.commit()
 
@@ -92,6 +95,13 @@ class PollCog(commands.Cog):
         if author_id == user_id:
             return True
         return False
+
+    @slash_command()
+    async def random_choice(self, ctx, number_of_options: Option(int, "Specify number of poll options", choices=[1, 2, 3, 4, 5])):
+        await ctx.interaction.response.send_modal(
+            ChoiceModal(number_of_options)
+        )
+        await ctx.respond("Creating...", delete_after=0)
 
 
 def setup(bot):
