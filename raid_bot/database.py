@@ -87,9 +87,14 @@ def get_table_creation_query(table_name: str):
             "create table if not exists Settings ("
             "guild_id integer not null,"
             "calendar text,"
+            "server text,"
             "primary key (guild_id)"
             ");"
         ),
+        'timezone': "create table if not exists Timezone ("
+                    "player_id integer primary key, "
+                    "timezone text"
+                    ");",
         "polls": (
             "create table if not exists Polls ("
             "poll_id integer not null,"
@@ -397,6 +402,65 @@ def insert_or_replace_calendar(conn: Connection, guild_id: int, ids: str):
             (guild_id, ids),
         )
         return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def update_calendar(conn: Connection, guild_id: int, ids: str):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE settings SET calendar = ? where guild_id = ?",
+            (ids, guild_id),
+        )
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def insert_or_replace_personal_timezone(conn: Connection, guild_id, timezone):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT OR REPLACE INTO timezone VALUES (?, ?)",
+            (guild_id, timezone))
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def update_server_timezone(conn: Connection, guild_id: int, timezone: str):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE settings SET timezone = ? where guild_id = ?",
+            (timezone, guild_id),
+        )
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_server_timezone(conn: Connection, guild_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT timezone FROM settings WHERE guild_id = (?)", [guild_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_personal_timezone(conn: Connection, user_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT timezone FROM timezone WHERE user_id = (?)", [user_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
     except sqlite3.Error as e:
         logger.exception(e)
 

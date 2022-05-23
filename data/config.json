@@ -1,3 +1,4 @@
 {
-  "SERVER_TZ": "Europe/Berlin"
+  "SERVER_TZ": "Europe/Berlin",
+  "LANGUAGE": "EN"
 }

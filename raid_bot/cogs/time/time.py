@@ -1,6 +1,8 @@
 import logging
+from datetime import datetime
 
 import dateparser
+import pytz
 from discord.ext import commands
 from discord.ext.commands import Context
 from discord.ext.commands.converter import T_co
@@ -11,10 +13,10 @@ logger.setLevel(logging.INFO)
 
 class Time(commands.Converter):
     async def convert(self, ctx: Context, argument: str) -> T_co:
-        return self.converter(ctx.bot, argument)
+        return self.converter(ctx.bot, ctx.guild.id, ctx.author.id, argument)
 
     @staticmethod
-    def converter(bot, argument):
+    def converter(bot, guild_id, author_id, argument):
         time_cog = bot.get_cog("TimeCog")
         argument_lower = argument.lower()
         parse_settings = {"PREFER_DATES_FROM": "future"}
@@ -27,6 +29,18 @@ class Time(commands.Converter):
         time = dateparser.parse(argument, settings=parse_settings)
         if time is None:
             raise commands.BadArgument("Failed to parse time: ", argument)
+
+        if time.tzinfo is None:
+            user_timezone = time_cog.get_user_timezone(author_id, guild_id)
+            parse_settings['TIMEZONE'] = user_timezone
+            parse_settings['RETURN_AS_TIMEZONE_AWARE'] = True
+            tz = pytz.timezone(parse_settings['TIMEZONE'])
+        else:
+            tz = time.tzinfo
+
+        parse_settings['RELATIVE_BASE'] = datetime.now(tz=tz).replace(tzinfo=None)
+        time = dateparser.parse(argument, settings=parse_settings)
+
         timestamp = int(time.timestamp())
 
         # Avoid scheduling event in the past

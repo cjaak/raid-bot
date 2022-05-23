@@ -88,7 +88,7 @@ class RaidCog(commands.Cog):
         setup: Option(str, "Choose a saved setup", required=False),
     ):
         """Schedules a raid"""
-        timestamp = Time().converter(self.bot, time)
+        timestamp = Time().converter(self.bot, ctx.guild_id, ctx.author.id, time)
 
         post = await ctx.send("\u200B")
 
