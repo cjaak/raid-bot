@@ -46,6 +46,7 @@ RAIDS = [
     "Karagga's Palace",
     "Gods",
     "Dxun",
+    "R4 Anomaly"
     "Random",
 ]
 

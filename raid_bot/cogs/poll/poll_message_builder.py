@@ -64,7 +64,7 @@ def build_poll_result_message(conn: Connection, poll_id: int):
 
 def get_percentage(part, whole):
     percentage = 100 * float(part) / float(whole)
-    return str(percentage) + "%"
+    return str(round(percentage, 2)) + "%"
 
 
 def build_opinion_message(conn: Connection, poll_id: int):
