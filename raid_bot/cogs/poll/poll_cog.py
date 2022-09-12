@@ -97,10 +97,14 @@ class PollCog(commands.Cog):
         return False
 
     @slash_command()
-    async def random_choice(self, ctx, number_of_options: Option(int, "Specify number of poll options", choices=[1, 2, 3, 4, 5])):
-        await ctx.interaction.response.send_modal(
-            ChoiceModal(number_of_options)
-        )
+    async def random_choice(
+        self,
+        ctx,
+        number_of_options: Option(
+            int, "Specify number of poll options", choices=[1, 2, 3, 4, 5]
+        ),
+    ):
+        await ctx.interaction.response.send_modal(ChoiceModal(number_of_options))
         await ctx.respond("Creating...", delete_after=0)
 
 

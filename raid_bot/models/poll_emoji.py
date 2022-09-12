@@ -14,4 +14,10 @@ OPINION_EMOJI: Dict[str, str] = {
     OpinionOptions.NO: "\U0001F44E",
 }
 
-POLL_EMOJI: List[str] = ["\U0001F1E6", "\U0001F1E7", "\U0001F1E8", "\U0001F1E9", "\U0001F1EA"]
+POLL_EMOJI: List[str] = [
+    "\U0001F1E6",
+    "\U0001F1E7",
+    "\U0001F1E8",
+    "\U0001F1E9",
+    "\U0001F1EA",
+]

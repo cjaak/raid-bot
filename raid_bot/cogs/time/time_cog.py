@@ -3,8 +3,13 @@ from discord import slash_command, Option
 from discord.ext import commands
 import logging
 
-from raid_bot.database import insert_or_replace_personal_timezone, update_server_timezone, select_server_timezone, \
-    select_personal_timezone, create_table
+from raid_bot.database import (
+    insert_or_replace_personal_timezone,
+    update_server_timezone,
+    select_server_timezone,
+    select_personal_timezone,
+    create_table,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -15,7 +20,7 @@ class TimeCog(commands.Cog):
         self.bot = bot
         self.conn = bot.conn
 
-        create_table(self.bot.conn, 'timezone')
+        create_table(self.bot.conn, "timezone")
 
     @slash_command()
     async def set_personal_timezone(self, ctx, timezone: Option(str, "Set timezone")):

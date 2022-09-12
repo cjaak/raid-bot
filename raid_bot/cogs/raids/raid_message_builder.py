@@ -4,7 +4,9 @@ from typing import Dict, List, Tuple
 import datetime
 import discord
 import logging
-from raid_bot.database import select_one_raid, select_all_assignments_by_raid_id
+
+from raid_bot.cogs.raids.raid_db_statements import select_one_raid
+from raid_bot.database import select_all_assignments_by_raid_id
 from raid_bot.models.assignment_model import Assignment
 
 from raid_bot.models.raid_model import Raid

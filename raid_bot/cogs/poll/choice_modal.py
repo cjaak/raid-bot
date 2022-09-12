@@ -27,4 +27,3 @@ class ChoiceModal(Modal):
         choice = random.choice(data)
 
         await interaction.response.send_message(f"I have chosen `{choice}` for you.")
-

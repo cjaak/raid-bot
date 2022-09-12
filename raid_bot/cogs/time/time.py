@@ -32,13 +32,13 @@ class Time(commands.Converter):
 
         if time.tzinfo is None:
             user_timezone = time_cog.get_user_timezone(author_id, guild_id)
-            parse_settings['TIMEZONE'] = user_timezone
-            parse_settings['RETURN_AS_TIMEZONE_AWARE'] = True
-            tz = pytz.timezone(parse_settings['TIMEZONE'])
+            parse_settings["TIMEZONE"] = user_timezone
+            parse_settings["RETURN_AS_TIMEZONE_AWARE"] = True
+            tz = pytz.timezone(parse_settings["TIMEZONE"])
         else:
             tz = time.tzinfo
 
-        parse_settings['RELATIVE_BASE'] = datetime.now(tz=tz).replace(tzinfo=None)
+        parse_settings["RELATIVE_BASE"] = datetime.now(tz=tz).replace(tzinfo=None)
         time = dateparser.parse(argument, settings=parse_settings)
 
         timestamp = int(time.timestamp())

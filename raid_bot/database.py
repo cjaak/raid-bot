@@ -87,14 +87,14 @@ def get_table_creation_query(table_name: str):
             "create table if not exists Settings ("
             "guild_id integer not null,"
             "calendar text,"
-            "server text,"
+            "timezone text,"
             "primary key (guild_id)"
             ");"
         ),
-        'timezone': "create table if not exists Timezone ("
-                    "player_id integer primary key, "
-                    "timezone text"
-                    ");",
+        "timezone": "create table if not exists Timezone ("
+        "user_id integer primary key, "
+        "timezone text"
+        ");",
         "polls": (
             "create table if not exists Polls ("
             "poll_id integer not null,"
@@ -422,8 +422,8 @@ def insert_or_replace_personal_timezone(conn: Connection, guild_id, timezone):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT OR REPLACE INTO timezone VALUES (?, ?)",
-            (guild_id, timezone))
+            "INSERT OR REPLACE INTO timezone VALUES (?, ?)", (guild_id, timezone)
+        )
         return True
     except sqlite3.Error as e:
         logger.exception(e)
@@ -632,3 +632,61 @@ def set_or_add_vote(conn: Connection, user_id, poll_id, option_id):
         return ids.split(";")
     except sqlite3.Error as e:
         logger.exception(e)
+
+
+def select_one(conn: Connection, table: str, primary_key: str, row_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM {table} WHERE {primary_key} = (?)", [row_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_all_for_guild(conn: Connection, table: str, guild_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM {table} WHERE guild_id = ?", [guild_id])
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def update_value(conn: Connection, table: str, column: str, primary_key: str, row_id: int, value: any):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            f"UPDATE {table} SET {column} = ? WHERE {primary_key} = {row_id}", [value]
+        )
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def delete_row(conn: Connection, table: str, primary_key: str, row_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"DELETE FROM {table} WHERE {primary_key} = ?", [row_id])
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def insert_row(conn: Connection, table: str, values):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            f"INSERT INTO {table} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            values,
+        )
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def insert_or_replace_row():
+    pass
+
+
+def insert_or_update_row():
+    pass

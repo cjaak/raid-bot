@@ -107,9 +107,7 @@ class StatCalculatorModal(discord.ui.Modal):
         configuration[f"MAX_DEVIATION"] = deviation
 
         pretty_dict_input = pprint.pformat(configuration)
-        await interaction.response.send_message(
-            f"```{pretty_dict_input}```"
-        )
+        await interaction.response.send_message(f"```{pretty_dict_input}```")
 
         first_stat_combinations = self.find_combinations(
             self.first_stat_target_value,
