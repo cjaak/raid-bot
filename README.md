@@ -61,3 +61,5 @@ When there's only the time specified the event will be scheduled for this day.
 | **/random_choice** \<number_of_options\>                            | /random_choice 5                             | Returns a random value from the in the modal supplied list. Up to 5 options are supported.                                                                                                                                                                                                                               |
 
 
+## Support
+[![paypal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cjaak)
