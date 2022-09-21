@@ -139,7 +139,7 @@ def insert_raid(
         channel_id: int,
         guild_id: int,
         author_id: int,
-        event_id: int | None,
+        event_id: Union[int, None],
         name: str,
         mode: str,
         description: str,
