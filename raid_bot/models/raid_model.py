@@ -10,6 +10,7 @@ class Raid:
     channel_id: int
     guild_id: int
     author_id: int
+    event_id: int
     name: str
     mode: str
     description: Union[str, None]
@@ -21,8 +22,9 @@ class Raid:
         self.channel_id = raid[1]
         self.guild_id = raid[2]
         self.author_id = raid[3]
-        self.name = raid[4]
-        self.mode = raid[5]
-        self.description = raid[6]
-        self.timestamp = raid[7]
-        self.setup = raid[8]
+        self.event_id = raid[4]
+        self.name = raid[5]
+        self.mode = raid[6]
+        self.description = raid[7]
+        self.timestamp = raid[8]
+        self.setup = raid[9]

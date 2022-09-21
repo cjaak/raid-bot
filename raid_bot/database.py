@@ -7,9 +7,10 @@ from typing import Union
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-CONN: Connection = None
+CONN: Connection | None = None
 
 
+# region db-creation
 def create_connection(db_file):
     """create a database connection to a SQLite database.
 
@@ -46,6 +47,7 @@ def get_table_creation_query(table_name: str):
             "channel_id integer not null, "
             "guild_id integer not null, "
             "author_id integer not null, "
+            "event_id integer, "
             "name text not null, "
             "mode text, "
             "description text null,"
@@ -88,13 +90,14 @@ def get_table_creation_query(table_name: str):
             "guild_id integer not null,"
             "calendar text,"
             "timezone text,"
+            "guild_events integer, "
             "primary key (guild_id)"
             ");"
         ),
         "timezone": "create table if not exists Timezone ("
-        "user_id integer primary key, "
-        "timezone text"
-        ");",
+                    "user_id integer primary key, "
+                    "timezone text"
+                    ");",
         "polls": (
             "create table if not exists Polls ("
             "poll_id integer not null,"
@@ -127,27 +130,32 @@ def get_table_creation_query(table_name: str):
     return sql_dict[table_name]
 
 
+# endregion
+
+# region raid-statements
 def insert_raid(
-    conn: Connection,
-    raid_id: int,
-    channel_id: int,
-    guild_id: int,
-    author_id: int,
-    name: str,
-    mode: str,
-    description: str,
-    timestamp: int,
-    setup: int,
+        conn: Connection,
+        raid_id: int,
+        channel_id: int,
+        guild_id: int,
+        author_id: int,
+        event_id: int | None,
+        name: str,
+        mode: str,
+        description: str,
+        timestamp: int,
+        setup: int,
 ):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO raids VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO raids VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 raid_id,
                 channel_id,
                 guild_id,
                 author_id,
+                event_id,
                 name,
                 mode,
                 description,
@@ -216,6 +224,11 @@ def delete_raid(conn: Connection, raid_id: int):
         logger.exception(e)
 
 
+
+
+# endregion
+
+# region assignment-statements
 def delete_assignment(conn: Connection, raid_id: int):
     try:
         cursor = conn.cursor()
@@ -225,7 +238,7 @@ def delete_assignment(conn: Connection, raid_id: int):
 
 
 def insert_or_update_assignment(
-    conn: Connection, player_id: int, raid_id: int, role: str, timestamp: int
+        conn: Connection, player_id: int, raid_id: int, role: str, timestamp: int
 ):
     try:
         cursor = conn.cursor()
@@ -251,6 +264,32 @@ def insert_or_update_assignment(
         logger.exception(e)
 
 
+def select_all_assignments_by_raid_id(conn: Connection, raid_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM assignment WHERE raid_id = ? ORDER BY timestamp", [raid_id]
+        )
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+def select_assignments_by_role_for_raid(conn: Connection, raid_id: int, role: str):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM assignment WHERE raid_id = ? AND WHERE role = ? ORDER BY timestamp",
+            (raid_id, role),
+        )
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
+# endregion assignment-statements
+
+# region setup-statements
 def select_one_setup(conn: Connection, setup_id: int):
     try:
         cursor = conn.cursor()
@@ -294,14 +333,6 @@ def delete_setup(conn: Connection, setup_id: int):
         logger.exception(e)
 
 
-def delete_setupplayers(conn: Connection, setup_id: int):
-    try:
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM setupplayers WHERE setup_id = ?", [setup_id])
-    except sqlite3.Error as e:
-        logger.exception(e)
-
-
 def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()
@@ -312,7 +343,7 @@ def select_all_setup_names_for_guild(conn: Connection, guild_id: int):
 
 
 def insert_or_replace_setup(
-    conn: Connection, setup_id: int, guild_id: int, channel_id: int, name: str
+        conn: Connection, setup_id: int, guild_id: int, channel_id: int, name: str
 ):
     try:
         cursor = conn.cursor()
@@ -324,8 +355,19 @@ def insert_or_replace_setup(
         logger.exception(e)
 
 
+# endregion
+
+# region setup-player-statements
+def delete_setupplayers(conn: Connection, setup_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM setupplayers WHERE setup_id = ?", [setup_id])
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+
 def insert_or_replace_setupplayer(
-    conn: Connection, player_id: int, setup_id: int, role: str
+        conn: Connection, player_id: int, setup_id: int, role: str
 ):
     try:
 
@@ -362,78 +404,67 @@ def select_all_players_for_setup(conn: Connection, setup_id):
         logger.exception(e)
 
 
-def select_all_assignments_by_raid_id(conn: Connection, raid_id: int):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT * FROM assignment WHERE raid_id = ? ORDER BY timestamp", [raid_id]
-        )
-        return cursor.fetchall()
-    except sqlite3.Error as e:
-        logger.exception(e)
+# endregion
 
-
-def select_assignments_by_role_for_raid(conn: Connection, raid_id: int, role: str):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT * FROM assignment WHERE raid_id = ? AND WHERE role = ? ORDER BY timestamp",
-            (raid_id, role),
-        )
-        return cursor.fetchall()
-    except sqlite3.Error as e:
-        logger.exception(e)
-
+# region settings-calendar-statements
 
 def select_calendar(conn: Connection, guild_id: int):
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT calendar FROM settings WHERE guild_id = ? ", [guild_id])
-        return cursor.fetchone()
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
+    except sqlite3.Error as e:
+        logger.exception(e)
+
+def select_guild_events_bool(conn: Connection, guild_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT guild_events FROM settings WHERE guild_id = ? ", [guild_id])
+        result = cursor.fetchone()
+        if result and len(result) == 1:
+            return result[0]
+        return result
     except sqlite3.Error as e:
         logger.exception(e)
 
 
-def insert_or_replace_calendar(conn: Connection, guild_id: int, ids: str):
+def insert_or_update_calendars(conn: Connection, guild_id: int, ids: str, guild_events: bool):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT OR REPLACE INTO settings VALUES (?, ?)",
-            (guild_id, ids),
+            "INSERT INTO settings(guild_id, calendar, guild_events) VALUES (?, ?, ?) ON CONFLICT (guild_id) DO UPDATE SET calendar = "
+            "EXCLUDED.calendar, guild_events = EXCLUDED.guild_events ",
+            (guild_id, ids, guild_events),
         )
         return True
     except sqlite3.Error as e:
         logger.exception(e)
 
-
-def update_calendar(conn: Connection, guild_id: int, ids: str):
+def insert_or_update_calendar_id(conn: Connection, guild_id: int, ids: str):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE settings SET calendar = ? where guild_id = ?",
-            (ids, guild_id),
-        )
+            "INSERT INTO settings(guild_id, calendar) VALUES (?, ?) ON CONFLICT (guild_id) DO UPDATE SET calendar = "
+            "EXCLUDED.calendar",
+            (guild_id, ids))
         return True
     except sqlite3.Error as e:
         logger.exception(e)
 
 
-def insert_or_replace_personal_timezone(conn: Connection, guild_id, timezone):
+# endregion
+
+# region settings-timezone-statements
+
+def insert_or_update_server_timezone(conn: Connection, guild_id: int, timezone: str):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT OR REPLACE INTO timezone VALUES (?, ?)", (guild_id, timezone)
-        )
-        return True
-    except sqlite3.Error as e:
-        logger.exception(e)
-
-
-def update_server_timezone(conn: Connection, guild_id: int, timezone: str):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(
-            "UPDATE settings SET timezone = ? where guild_id = ?",
+            "INSERT INTO settings(guild_id, timezone) VALUES (?, ?) ON CONFLICT (guild_id) DO UPDATE SET calendar = "
+            "EXCLUDED.timezone",
             (timezone, guild_id),
         )
         return True
@@ -453,6 +484,19 @@ def select_server_timezone(conn: Connection, guild_id: int):
         logger.exception(e)
 
 
+# endregion
+
+# region personal-timezone-statements
+
+def insert_or_replace_personal_timezone(conn: Connection, guild_id, timezone):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT OR REPLACE INTO timezone VALUES (?, ?)", (guild_id, timezone)
+        )
+        return True
+    except sqlite3.Error as e:
+        logger.exception(e)
 def select_personal_timezone(conn: Connection, user_id: int):
     try:
         cursor = conn.cursor()
@@ -465,14 +509,17 @@ def select_personal_timezone(conn: Connection, user_id: int):
         logger.exception(e)
 
 
+# endregion
+
+# region poll-statements
 def insert_or_replace_poll(
-    conn: Connection,
-    poll_id: int,
-    channel_id: int,
-    guild_id: int,
-    author_id: int,
-    number_of_options: int,
-    multiple_selection: bool,
+        conn: Connection,
+        poll_id: int,
+        channel_id: int,
+        guild_id: int,
+        author_id: int,
+        number_of_options: int,
+        multiple_selection: bool,
 ):
     try:
         cursor = conn.cursor()
@@ -537,7 +584,7 @@ def insert_or_replace_poll_option(conn: Connection, poll_id, option_id, option):
 
 
 def insert_or_replace_vote(
-    conn: Connection, user_id: int, poll_id: int, option_id: int
+        conn: Connection, user_id: int, poll_id: int, option_id: int
 ):
     try:
 
@@ -633,60 +680,4 @@ def set_or_add_vote(conn: Connection, user_id, poll_id, option_id):
     except sqlite3.Error as e:
         logger.exception(e)
 
-
-def select_one(conn: Connection, table: str, primary_key: str, row_id: int):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM {table} WHERE {primary_key} = (?)", [row_id])
-        result = cursor.fetchone()
-        if result and len(result) == 1:
-            return result[0]
-        return result
-    except sqlite3.Error as e:
-        logger.exception(e)
-
-
-def select_all_for_guild(conn: Connection, table: str, guild_id: int):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM {table} WHERE guild_id = ?", [guild_id])
-        return cursor.fetchall()
-    except sqlite3.Error as e:
-        logger.exception(e)
-
-
-def update_value(conn: Connection, table: str, column: str, primary_key: str, row_id: int, value: any):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(
-            f"UPDATE {table} SET {column} = ? WHERE {primary_key} = {row_id}", [value]
-        )
-    except sqlite3.Error as e:
-        logger.exception(e)
-
-
-def delete_row(conn: Connection, table: str, primary_key: str, row_id: int):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(f"DELETE FROM {table} WHERE {primary_key} = ?", [row_id])
-    except sqlite3.Error as e:
-        logger.exception(e)
-
-
-def insert_row(conn: Connection, table: str, values):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(
-            f"INSERT INTO {table} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            values,
-        )
-    except sqlite3.Error as e:
-        logger.exception(e)
-
-
-def insert_or_replace_row():
-    pass
-
-
-def insert_or_update_row():
-    pass
+# endregion

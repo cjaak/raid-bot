@@ -3,6 +3,7 @@ from datetime import datetime
 
 import dateparser
 import pytz
+import zoneinfo
 from discord.ext import commands
 from discord.ext.commands import Context
 from discord.ext.commands.converter import T_co
@@ -34,6 +35,7 @@ class Time(commands.Converter):
             user_timezone = time_cog.get_user_timezone(author_id, guild_id)
             parse_settings["TIMEZONE"] = user_timezone
             parse_settings["RETURN_AS_TIMEZONE_AWARE"] = True
+            #tz = zoneinfo.ZoneInfo(parse_settings["TIMEZONE"])
             tz = pytz.timezone(parse_settings["TIMEZONE"])
         else:
             tz = time.tzinfo

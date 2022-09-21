@@ -5,7 +5,7 @@ import logging
 
 from raid_bot.database import (
     insert_or_replace_personal_timezone,
-    update_server_timezone,
+    insert_or_update_server_timezone,
     select_server_timezone,
     select_personal_timezone,
     create_table,
@@ -52,7 +52,7 @@ class TimeCog(commands.Cog):
             content = f"{e} is not a valid time zone!"
         else:
             tz = str(tz)
-            update_server_timezone(conn, ctx.guild_id, tz)
+            insert_or_update_server_timezone(conn, ctx.guild_id, tz)
             conn.commit()
             content = f"Set default time zone to {tz}."
         await ctx.respond(content)

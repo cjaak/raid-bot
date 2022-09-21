@@ -4,6 +4,7 @@ import sys
 from typing import List
 
 import discord
+import requests
 from discord.commands import (
     slash_command,
     Option,
@@ -23,7 +24,7 @@ from raid_bot.database import (
     delete_assignment,
     select_one_setup_by_name,
     select_all_players_for_setup,
-    insert_or_update_assignment,
+    insert_or_update_assignment, update_raid,
 )
 from raid_bot.models.raid_model import Raid
 from raid_bot.models.setup_model import Setup
@@ -46,7 +47,9 @@ RAIDS = [
     "Karagga's Palace",
     "Gods",
     "Dxun",
-    "R4 Anomaly" "Random",
+    "R4 Anomaly",
+    "Random",
+    "Hateful",
 ]
 
 
@@ -89,7 +92,7 @@ class RaidCog(commands.Cog):
     ):
         """Schedules a raid"""
         timestamp = Time().converter(self.bot, ctx.guild_id, ctx.author.id, time)
-
+        raid_time = datetime.datetime.utcfromtimestamp(timestamp)
         post = await ctx.send("\u200B")
 
         raid_id = int(post.id)
@@ -112,6 +115,7 @@ class RaidCog(commands.Cog):
             ctx.channel.id,
             ctx.guild_id,
             ctx.author.id,
+            None,
             name,
             mode,
             description,
@@ -119,11 +123,12 @@ class RaidCog(commands.Cog):
             setup,
         )
 
-        self.conn.commit()
-
         raid_embed: discord.Embed = build_raid_message(self.conn, raid_id)
         await post.edit(embed=raid_embed, view=RaidView(self))
 
+        await self.create_guild_event(ctx.channel, raid_id)
+        self.conn.commit()
+        logger.info(f"Created new raid: {name} at {raid_time} for guild {ctx.guild_id}.")
         await self.calendar_cog.update_calendar(ctx.guild_id)
 
         # workaround because `respond` seems to be required.
@@ -144,6 +149,19 @@ class RaidCog(commands.Cog):
             )
             logger.warning(error_msg)
             await channel.send("That's an error. Check the logs.")
+
+    async def create_guild_event(self, channel, raid_id):
+        try:
+            event_id = self.calendar_cog.create_guild_event(raid_id)
+        except requests.HTTPError as e:
+            logger.warning(e.response.text)
+            err_msg = "Failed to create the discord event. Please check the bot has the manage event permission."
+            await channel.send(err_msg, delete_after=20)
+        except requests.exceptions.JSONDecodeError as e:
+            err_msg = _("Invalid response from Discord.")
+            await channel.send(err_msg, delete_after=20)
+        else:
+            update_raid(self.conn, raid_id, "event_id", event_id)
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):

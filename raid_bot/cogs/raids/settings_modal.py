@@ -1,4 +1,5 @@
 import discord.ui
+import requests
 from discord.ext import commands
 from discord.ui import Button, View
 from sqlite3 import Connection
@@ -106,10 +107,21 @@ class SettingsModal(discord.ui.Modal):
         await self.raid_cog.update_raid_post(self.raid_id, interaction.channel)
         await self.calendar_cog.update_calendar(interaction.guild.id, new_run=False)
 
+        try:
+            self.calendar_cog.modify_guild_event(self.raid_id)
+        except requests.HTTPError as e:
+            logger.warning(e.response.text)
+
         self.stop()
 
     async def delete_raid(self, interaction: discord.Interaction):
         # await interaction.response.defer()
+
+        # Delete the guild event
+        try:
+            self.calendar_cog.delete_guild_event(self.raid_id)
+        except requests.HTTPError as e:
+            logger.warning(e.response.text)
 
         await self.raid_cog.cleanup_old_raid(self.raid_id, "Raid deleted via button.")
         post = interaction.channel.get_partial_message(self.raid_id)

@@ -14,6 +14,7 @@ from database import create_connection
 class Bot(commands.Bot):
     def __init__(self):
         self.launch_time = datetime.utcnow()
+        self.api = "https://discord.com/api/v10/"
 
         logfile = "raid_bot.log"
         logging.basicConfig(
