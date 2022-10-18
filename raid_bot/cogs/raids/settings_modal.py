@@ -88,7 +88,7 @@ class SettingsModal(discord.ui.Modal):
 
         if settings["time"]:
             try:
-                timestamp = Time().converter(self.raid_cog.bot, settings["time"])
+                timestamp = Time().converter(self.raid_cog.bot, self.raid.guild_id, self.raid.author_id, settings["time"])
             except commands.BadArgument:
                 resp_msg = f"Failed to parse time argument: {settings['time']}"
                 settings.pop("time")
